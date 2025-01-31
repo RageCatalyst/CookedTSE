@@ -10,7 +10,7 @@ albedo_texture = ExtResource("1_k3k4k")
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_4jxk7"]
 
-[node name="CharacterBody3D" type="CharacterBody3D"]
+[node name="CharacterBody3D" type="CharacterBody3D" groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("1_b71vn")
 

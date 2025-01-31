@@ -14,4 +14,3 @@ func _process(delta: float) -> void:
 	if player:
 		var _calculated_position := player.global_transform.origin + _camera_offset
 		global_transform.origin = lerp(global_transform.origin, _calculated_position, smooth_speed * delta)
-	
