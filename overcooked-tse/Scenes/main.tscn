@@ -1,0 +1,55 @@
+[gd_scene load_steps=12 format=3 uid="uid://d0axgqh8dyxum"]
+
+[ext_resource type="Texture2D" uid="uid://cd3fcinti1un5" path="res://addons/proto-csgs/textures/dark/texture_01.png" id="1_85evx"]
+[ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
+[ext_resource type="Texture2D" uid="uid://b6pvr2d74nr5s" path="res://addons/proto-csgs/textures/light/texture_01.png" id="3_7i1cw"]
+[ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
+[ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_06ja8"]
+albedo_texture = ExtResource("1_85evx")
+uv1_scale = Vector3(30.59, 30.59, 30.59)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bjctr"]
+material = SubResource("StandardMaterial3D_06ja8")
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ljgql"]
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u3mfg"]
+albedo_texture = ExtResource("3_7i1cw")
+
+[sub_resource type="BoxMesh" id="BoxMesh_8vomk"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u4ica"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" parent="." instance=ExtResource("1_bdal3")]
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+mesh = SubResource("BoxMesh_bjctr")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/StaticBody3D"]
+shape = SubResource("BoxShape3D_ljgql")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.32454, 0.5, 2.34057)
+material_override = SubResource("StandardMaterial3D_u3mfg")
+mesh = SubResource("BoxMesh_8vomk")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Box"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Box/StaticBody3D"]
+shape = SubResource("BoxShape3D_u4ica")
+
+[node name="CharacterBody3D" parent="." instance=ExtResource("4_0txjt")]
+
+[node name="CameraContainer" parent="." node_paths=PackedStringArray("player") instance=ExtResource("5_2xg1d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, 5)
+_camera_offset = Vector3(0, 7, 5)
+player = NodePath("../CharacterBody3D")
