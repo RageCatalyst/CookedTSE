@@ -20,3 +20,6 @@ shape = SubResource("CapsuleShape3D_3i4r6")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_xw2f8")
 mesh = SubResource("CapsuleMesh_4jxk7")
+
+[node name="HoldPosition" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.550058, 0.254475, 4.76837e-07)

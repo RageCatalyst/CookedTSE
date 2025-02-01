@@ -1,6 +1,6 @@
 extends Node3D
 
-@export var item_name: String = "Health Potion"  # Set the item type
+@export var item_name: String = "Carrot"  # Set the item type
 @export var pickup_range: float = 2.0  # How close the player must be
 
 @onready var pickup_label = $Label3D  # Reference the label
@@ -15,16 +15,21 @@ func _process(_delta):
 	if player_in_range and Input.is_action_just_pressed("interact"):  # Check for "E" key
 		_pickup()
 
+func _drop():
+	print(player.name + " dropped " + item_name)
+	player.drop_item(self)
+
 func _pickup():
 	print(player.name + " picked up " + item_name)
-	queue_free()  # Remove the item from the game
-
+	player.pick_up_item(self)
+	pickup_label.visible = false
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player"):  # Ensure the player has a "player" group
 		player_in_range = true
 		player = body  # Store the player reference
-		pickup_label.visible = true  # Show label when player is close
+		if player.held_item == null:
+			pickup_label.visible = true
 
 
 func _on_area_3d_body_exited(body: Node3D) -> void:
