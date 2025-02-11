@@ -53,8 +53,16 @@ func attach_item_to_hand(item_node):
 	item_node.set_physics_process(false)
 
 func drop_item():
-	print("player is holding: " + held_item.name)
 	if held_item:
-		held_item.reparent(get_parent())
-		held_item.global_transform.origin = global_transform.origin + transform.basis.z * -1.5  # Drop in front
-		held_item = null
+		var dropped_item = held_item
+		held_item = null  # Clear the player's held item
+
+		# Reparent the item back to the world
+		dropped_item.reparent(get_parent())
+		dropped_item.global_transform.origin = global_transform.origin + transform.basis.z * -1.5  # Drop in front
+
+		# Ensure the object has a RigidBody3D and re-enable physics
+		var rigid_body = dropped_item as RigidBody3D
+		if rigid_body:
+			rigid_body.freeze = false  # Unfreeze physics
+			rigid_body.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2))  # Add a small drop force

@@ -1,37 +1,45 @@
-[gd_scene load_steps=5 format=3 uid="uid://xjk1yyq6pmsf"]
+[gd_scene load_steps=7 format=3 uid="uid://xjk1yyq6pmsf"]
 
 [ext_resource type="Script" path="res://Scenes/Scripts/pickup_object.gd" id="1_b0dvd"]
+[ext_resource type="PackedScene" uid="uid://b83igxijffe5" path="res://Models/Carrot.glb" id="2_3idsr"]
 
-[sub_resource type="SphereMesh" id="SphereMesh_wlq8q"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_qscsc"]
+bounce = 0.5
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_c7rv8"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_vvbhg"]
+radius = 0.33079
+
+[sub_resource type="PointMesh" id="PointMesh_06onx"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_owob4"]
 radius = 2.06045
 
-[node name="PickupObject" type="Node3D"]
+[node name="RigidBody3D" type="RigidBody3D"]
+physics_material_override = SubResource("PhysicsMaterial_qscsc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_vvbhg")
+
+[node name="PickupObject" type="Node3D" parent="."]
 script = ExtResource("1_b0dvd")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("SphereMesh_wlq8q")
+[node name="Carrot" parent="PickupObject" instance=ExtResource("2_3idsr")]
+transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-collision_layer = 0
-collision_mask = 0
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PickupObject"]
+visible = false
+mesh = SubResource("PointMesh_06onx")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("SphereShape3D_c7rv8")
+[node name="Area3D" type="Area3D" parent="PickupObject"]
 
-[node name="Area3D" type="Area3D" parent="."]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupObject/Area3D"]
 shape = SubResource("SphereShape3D_owob4")
 
-[node name="Label3D" type="Label3D" parent="."]
+[node name="Label3D" type="Label3D" parent="PickupObject"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 visible = false
 billboard = 1
 text = "Press \"E\" to Pick Up."
 
-[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
-[connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]
+[connection signal="body_entered" from="PickupObject/Area3D" to="PickupObject" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="PickupObject/Area3D" to="PickupObject" method="_on_area_3d_body_exited"]
