@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://cofr0gclmllnl"]
+
+[ext_resource type="Script" path="res://Scenes/multiplayer.gd" id="1_l7dgi"]
+
+[node name="Multiplayer" type="Node"]
+script = ExtResource("1_l7dgi")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 29.0
+offset_right = 69.0
+offset_bottom = 40.0
+
+[node name="Net" type="VBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = -29.0
+offset_right = 67.0
+offset_bottom = 40.0
+
+[node name="Options" type="HBoxContainer" parent="UI/Net"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/Net/Options"]
+layout_mode = 2
+text = "Direct:"
+
+[node name="Host" type="Button" parent="UI/Net/Options"]
+layout_mode = 2
+text = "Host"
+
+[node name="Connect" type="Button" parent="UI/Net/Options"]
+layout_mode = 2
+text = "Connect"
+
+[node name="Remote" type="LineEdit" parent="UI/Net/Options"]
+layout_mode = 2
