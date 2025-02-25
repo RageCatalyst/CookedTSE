@@ -1,16 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://cofr0gclmllnl"]
+[gd_scene load_steps=3 format=3 uid="uid://cofr0gclmllnl"]
 
 [ext_resource type="Script" path="res://Scenes/multiplayer.gd" id="1_l7dgi"]
+[ext_resource type="PackedScene" uid="uid://d0axgqh8dyxum" path="res://Scenes/level.tscn" id="2_lut63"]
 
 [node name="Multiplayer" type="Node"]
 script = ExtResource("1_l7dgi")
 
+[node name="Level" parent="." instance=ExtResource("2_lut63")]
+
+[node name="LevelSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://Scenes/level.tscn")
+spawn_path = NodePath("../Level")
+spawn_limit = 1
+
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 29.0
-offset_right = 69.0
-offset_bottom = 40.0
+offset_left = 35.0
+offset_top = 6.0
+offset_right = 75.0
+offset_bottom = 46.0
 
 [node name="Net" type="VBoxContainer" parent="UI"]
 layout_mode = 0
@@ -35,3 +44,9 @@ text = "Connect"
 
 [node name="Remote" type="LineEdit" parent="UI/Net/Options"]
 layout_mode = 2
+text = "127.0.0.1"
+placeholder_text = "IP Address"
+expand_to_text_length = true
+
+[connection signal="pressed" from="UI/Net/Options/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="UI/Net/Options/Connect" to="." method="_on_connect_pressed"]
