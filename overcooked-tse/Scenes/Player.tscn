@@ -1,14 +1,16 @@
 [gd_scene load_steps=6 format=3 uid="uid://bd6ae1vio0ubo"]
 
 [ext_resource type="Script" path="res://Scenes/Scripts/player.gd" id="1_b71vn"]
-[ext_resource type="Texture2D" uid="uid://cd3fcinti1un5" path="res://addons/proto-csgs/textures/dark/texture_01.png" id="1_k3k4k"]
+[ext_resource type="PackedScene" uid="uid://dilcl7aco8lba" path="res://addons/proto-csgs/proto_csg_cylinder_3d.tscn" id="2_v3dgr"]
+[ext_resource type="Texture2D" uid="uid://cqk4iys3i4lam" path="res://addons/proto-csgs/textures/red/texture_01.png" id="4_ugi7s"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3i4r6"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xw2f8"]
-albedo_texture = ExtResource("1_k3k4k")
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_4jxk7"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8ouen"]
+resource_local_to_scene = true
+albedo_texture = ExtResource("4_ugi7s")
+uv1_offset = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
 
 [node name="CharacterBody3D" type="CharacterBody3D" groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -17,9 +19,10 @@ script = ExtResource("1_b71vn")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_3i4r6")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-material_override = SubResource("StandardMaterial3D_xw2f8")
-mesh = SubResource("CapsuleMesh_4jxk7")
+[node name="ProtoCSGCylinder3D" parent="." instance=ExtResource("2_v3dgr")]
+use_collision = false
+sides = 20
+material = SubResource("StandardMaterial3D_8ouen")
 
 [node name="HoldPosition" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.550058, 0.254475, 4.76837e-07)

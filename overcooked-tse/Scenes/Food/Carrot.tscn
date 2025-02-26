@@ -24,7 +24,7 @@ shape = SubResource("SphereShape3D_vvbhg")
 script = ExtResource("1_b0dvd")
 
 [node name="Carrot" parent="PickupObject" instance=ExtResource("2_3idsr")]
-transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
+transform = Transform3D(0.27, 0, 0, 0, 0.27, 0, 0, 0, 0.27, 0, 0, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="PickupObject"]
 visible = false

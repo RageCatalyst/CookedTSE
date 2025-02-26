@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://b6pvr2d74nr5s" path="res://addons/proto-csgs/textures/light/texture_01.png" id="3_7i1cw"]
 [ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
-[ext_resource type="PackedScene" uid="uid://xjk1yyq6pmsf" path="res://Scenes/pickup_object.tscn" id="6_g51fe"]
+[ext_resource type="PackedScene" uid="uid://xjk1yyq6pmsf" path="res://Scenes/Food/Carrot.tscn" id="6_g51fe"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_06ja8"]
 albedo_texture = ExtResource("1_85evx")
@@ -79,11 +79,12 @@ mesh = SubResource("BoxMesh_8vomk")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Box/StaticBody3D"]
 shape = SubResource("BoxShape3D_u4ica")
 
-[node name="CharacterBody3D" parent="." instance=ExtResource("4_0txjt")]
+[node name="Player" parent="." instance=ExtResource("4_0txjt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.59015, 0)
 
 [node name="CameraContainer" parent="." node_paths=PackedStringArray("player") instance=ExtResource("5_2xg1d")]
 _camera_offset = Vector3(0, 7, 5)
-player = NodePath("../CharacterBody3D")
+player = NodePath("../Player")
 
-[node name="PickupObject" parent="." instance=ExtResource("6_g51fe")]
+[node name="Carrot" parent="." instance=ExtResource("6_g51fe")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.95647, 0.729791, -3.427)
