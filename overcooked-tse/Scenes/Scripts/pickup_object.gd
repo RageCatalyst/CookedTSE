@@ -5,6 +5,8 @@ extends Node3D
 
 @onready var pickup_label = $Label3D  # Reference the label
 
+var timer_started = false # Ensures timer only starts once
+
 var player_in_range = false
 var player = null
 
@@ -21,8 +23,10 @@ func _drop():
 	player.drop_item(self)
 
 func _pickup():
-	$"../Timer".start()
-	print("Timer start")
+	if timer_started == false:
+		$"../Timer".start() # starts the timer when the player picks up the object for the first time (will be changed)
+		timer_started = true
+		print("Timer start")
 	print(player.name + " picked up " + item_name)
 	player.pick_up_item(self)
 	pickup_label.visible = false

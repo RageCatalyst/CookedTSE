@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://d0axgqh8dyxum"]
+[gd_scene load_steps=15 format=3 uid="uid://d0axgqh8dyxum"]
 
 [ext_resource type="Texture2D" uid="uid://cd3fcinti1un5" path="res://addons/proto-csgs/textures/dark/texture_01.png" id="1_85evx"]
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
 [ext_resource type="PackedScene" uid="uid://xjk1yyq6pmsf" path="res://Scenes/pickup_object.tscn" id="6_g51fe"]
+[ext_resource type="FontFile" uid="uid://di7id2uirl0sf" path="res://SUPER BOOM.otf" id="7_6bp64"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_06ja8"]
 albedo_texture = ExtResource("1_85evx")
@@ -98,13 +99,14 @@ offset_left = -122.0
 offset_top = -56.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 20
+theme_override_fonts/font = ExtResource("7_6bp64")
+theme_override_font_sizes/font_size = 40
 text = "placeholder"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 15.0
+wait_time = 150.0
 one_shot = true
 
 [connection signal="timeout" from="Timer" to="CameraContainer" method="_on_timer_timeout"]
