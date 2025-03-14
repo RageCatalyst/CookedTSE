@@ -87,3 +87,5 @@ player = NodePath("../CharacterBody3D")
 
 [node name="PickupObject" parent="." instance=ExtResource("6_g51fe")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.95647, 0.729791, -3.427)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupObject"]
