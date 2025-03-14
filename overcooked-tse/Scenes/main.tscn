@@ -88,4 +88,23 @@ player = NodePath("../CharacterBody3D")
 [node name="PickupObject" parent="." instance=ExtResource("6_g51fe")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.95647, 0.729791, -3.427)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupObject"]
+[node name="Label" type="Label" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -122.0
+offset_top = -56.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 20
+text = "placeholder"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 15.0
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="CameraContainer" method="_on_timer_timeout"]

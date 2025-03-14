@@ -11,6 +11,7 @@ var player = null
 func _ready():
 	pickup_label.visible = false  # Hide label initially
 
+	
 func _process(_delta):
 	if player_in_range and Input.is_action_just_pressed("interact"):  # Check for "E" key
 		_pickup()
@@ -20,6 +21,8 @@ func _drop():
 	player.drop_item(self)
 
 func _pickup():
+	$"../Timer".start()
+	print("Timer start")
 	print(player.name + " picked up " + item_name)
 	player.pick_up_item(self)
 	pickup_label.visible = false
@@ -37,3 +40,4 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 		player_in_range = false
 		player = null
 		pickup_label.visible = false  # Hide label when player leaves
+	
