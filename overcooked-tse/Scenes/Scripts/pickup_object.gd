@@ -5,7 +5,7 @@ extends Node3D
 
 @onready var pickup_label = $Label3D  # Reference the label
 
-var timer_started = false # Ensures timer only starts once
+var timer_started = false # Ensures timer only starts the one time
 
 var player_in_range = false
 var player = null
