@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://bd6ae1vio0ubo"]
 
-[ext_resource type="Script" path="res://Scenes/Scripts/player.gd" id="1_b71vn"]
+[ext_resource type="Script" uid="uid://bqx1m85gdvgw2" path="res://Scenes/Scripts/player.gd" id="1_b71vn"]
 [ext_resource type="PackedScene" uid="uid://dilcl7aco8lba" path="res://addons/proto-csgs/proto_csg_cylinder_3d.tscn" id="2_v3dgr"]
 [ext_resource type="Texture2D" uid="uid://cqk4iys3i4lam" path="res://addons/proto-csgs/textures/red/texture_01.png" id="4_ugi7s"]
 
