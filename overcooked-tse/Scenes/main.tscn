@@ -41,7 +41,7 @@ transform = Transform3D(1.555, 0, 0, 0, 1.555, 0, 0, 0, 1.555, -0.778462, -0.888
 transform = Transform3D(0.643087, 0, 0, 0, 0.643087, 0, 0, 0, 0.643087, 0.437502, 0.520192, -0.600378)
 shape = SubResource("ConcavePolygonShape3D_hptm8")
 
-[node name="countertop" parent="." instance=ExtResource("7_6bp64")]
+[node name="countertopadssa" parent="." instance=ExtResource("7_6bp64")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.01175, 0.231706, 2.38815)
 
 [node name="Onion" parent="." instance=ExtResource("6_21xkr")]

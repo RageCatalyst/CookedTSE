@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=4 uid="uid://city3oyq3py2e"]
 
-[ext_resource type="Script" uid="uid://c1x45hb1cm515" path="res://Scenes/placement_preview.gd" id="1_rda8s"]
-[ext_resource type="Material" uid="uid://be4oevvk3v82p" path="res://Materials/PreviewMaterial.tres" id="2_gh0xl"]
+[ext_resource type="Script" uid="uid://c1x45hb1cm515" path="res://Scenes/placement_preview.gd" id="1_c004o"]
+[ext_resource type="Material" uid="uid://be4oevvk3v82p" path="res://Materials/PreviewMaterial.tres" id="2_0uam6"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tohn3"]
 resource_name = "Material.001"
@@ -44,10 +44,15 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_k7eu6")
 
 [node name="preview" type="Node3D"]
-script = ExtResource("1_rda8s")
+script = ExtResource("1_c004o")
 
 [node name="Onion Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.415, 0, 0, 0, -0.333645, 1.35224e-07, 0, -1.08715e-07, -0.415, 0, -0.0890224, 0)
 mesh = SubResource("ArrayMesh_njak0")
 skeleton = NodePath("")
-surface_material_override/0 = ExtResource("2_gh0xl")
+surface_material_override/0 = ExtResource("2_0uam6")
+
+[node name="press e to place" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+billboard = 1
+text = "Press E to place"

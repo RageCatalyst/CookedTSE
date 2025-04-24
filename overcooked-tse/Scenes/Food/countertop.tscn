@@ -16,5 +16,5 @@ transform = Transform3D(0.665, 0, 0, 0, 0.665, 0, 0, 0, 0.665, 0, 0.662647, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.29425e-05, 0.0594788, 0.00331116)
 shape = SubResource("BoxShape3D_wxj5o")
 
-[node name="SnapPoint" type="Marker3D" parent="." groups=["countertops"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.213585, 0)
+[node name="SnapPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65052, 0)
