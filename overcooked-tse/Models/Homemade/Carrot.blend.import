@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cj1dmhh0uvmuv"
-path="res://.godot/imported/onion.blend-a705b396dc891e6523c9252258fc5d4d.scn"
+uid="uid://cy4b2x1rekc65"
+path="res://.godot/imported/Carrot.blend-b34fc97cf943a979106c674947c064fe.scn"
 
 [deps]
 
-source_file="res://Models/onion.blend"
-dest_files=["res://.godot/imported/onion.blend-a705b396dc891e6523c9252258fc5d4d.scn"]
+source_file="res://Models/Homemade/Carrot.blend"
+dest_files=["res://.godot/imported/Carrot.blend-b34fc97cf943a979106c674947c064fe.scn"]
 
 [params]
 

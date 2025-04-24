@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://db8uogurso5wk"]
+
+[ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wxj5o"]
+size = Vector3(1.99641, 2.12494, 2.00485)
+
+[node name="countertop" type="Node3D" groups=["countertops"]]
+
+[node name="Countertop" parent="." instance=ExtResource("1_wxj5o")]
+transform = Transform3D(0.665, 0, 0, 0, 0.665, 0, 0, 0, 0.665, 0, 0.662647, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Countertop"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Countertop/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.29425e-05, 0.0594788, 0.00331116)
+shape = SubResource("BoxShape3D_wxj5o")
+
+[node name="SnapPoint" type="Marker3D" parent="." groups=["countertops"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.213585, 0)

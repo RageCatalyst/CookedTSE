@@ -26,3 +26,5 @@ material = SubResource("StandardMaterial3D_8ouen")
 
 [node name="HoldPosition" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.550058, 0.254475, 4.76837e-07)
+
+[node name="PlacementPreview" type="Node3D" parent="."]
