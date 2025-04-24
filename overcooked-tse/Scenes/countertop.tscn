@@ -1,11 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://db8uogurso5wk"]
+[gd_scene load_steps=4 format=3 uid="uid://db8uogurso5wk"]
 
+[ext_resource type="Script" uid="uid://bmjajaiytj46y" path="res://Scenes/Scripts/countertop.gd" id="1_eqru6"]
 [ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wxj5o"]
 size = Vector3(1.99641, 2.12494, 2.00485)
 
 [node name="countertop" type="Node3D" groups=["countertops"]]
+script = ExtResource("1_eqru6")
 
 [node name="Countertop" parent="." instance=ExtResource("1_wxj5o")]
 transform = Transform3D(0.665, 0, 0, 0, 0.665, 0, 0, 0, 0.665, 0, 0.662647, 0)

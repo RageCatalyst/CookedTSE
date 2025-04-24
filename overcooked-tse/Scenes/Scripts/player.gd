@@ -41,7 +41,7 @@ func _process(_delta: float) -> void:
 			preview_instance.queue_free()
 			preview_instance = null
 
-	# Optional debug visualization (commented out until DebugDraw3D is implemented)
+	# Optional debug visualization (commented out until DebugDraw3D is implemented)cvxbfxdcv
 	# var from = global_transform.origin
 	# var to = from + facing_direction * 2.0
 	# DebugDraw3D.draw_line(from, to, Color.BLUE)
