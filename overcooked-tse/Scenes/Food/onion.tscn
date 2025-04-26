@@ -15,11 +15,17 @@ collision_layer = 0
 script = ExtResource("1_yec2b")
 item_name = "Onion"
 
-[node name="Label3D" type="Label3D" parent="."]
+[node name="Pickup Label" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 visible = false
 billboard = 1
 text = "Press \"E\" to Pick Up."
+
+[node name="Interact Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
+billboard = 1
+text = "Hold \"F\" to chop"
 
 [node name="Sphere Collider" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_d4jta")

@@ -3,7 +3,7 @@ extends Node3D
 @export var item_name: String = ""  # Set the item type
 @export var pickup_range: float = 2.0  # How close the player must be
 
-@onready var pickup_label = $Label3D  # Reference the label
+@onready var pickup_label = $"Pickup Label"  # Reference the label
 
 var player_in_range = false
 var player = null

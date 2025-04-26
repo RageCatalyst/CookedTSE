@@ -9,7 +9,12 @@ enum State { WHOLE, CHOPPED }
 @export var chopped_mesh: Mesh = preload("res://Meshes/chopped onion.mesh")
 @export var processed_scene: PackedScene = null # Assign ChoppedOnion.tscn in the editor
 
-@onready var mesh_instance: MeshInstance3D = get_parent().get_node("OnionMesh")
+@onready var mesh_instance: MeshInstance3D = $"../OnionMesh"
+@onready var interact_label: Label3D = $"../Interact Label"
+
+
+var current_countertop: Node = null
+var on_chopping_board: bool = false
 
 func _ready():
 	update_mesh()
@@ -40,3 +45,27 @@ func debug_next_state():
 func _input(event):
 	if event.is_action_pressed("debug_next_state"):
 		debug_next_state()
+
+func set_countertop(countertop: Node):
+	current_countertop = countertop
+	if current_countertop:
+		current_countertop.place_item(self)
+		# Check if this is a chopping board
+		on_chopping_board = current_countertop.has_chopping_board() if current_countertop.has_method("has_chopping_board") else false
+		if on_chopping_board and state == State.WHOLE:
+			print("giving interact label")
+			interact_label.visible = true
+		else:
+			interact_label.visible = false
+
+func clear_countertop():
+	if current_countertop:
+		current_countertop.remove_item()
+	current_countertop = null
+	on_chopping_board = false
+	interact_label.visible = false
+
+func _process(_delta):
+	# Update on_chopping_board if countertop changes
+	if current_countertop:
+		on_chopping_board = current_countertop.has_chopping_board() if current_countertop.has_method("has_chopping_board") else false
