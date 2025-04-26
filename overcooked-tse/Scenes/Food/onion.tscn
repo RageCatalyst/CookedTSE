@@ -15,6 +15,9 @@ collision_layer = 0
 script = ExtResource("1_yec2b")
 item_name = "Onion"
 
+[node name="Ingredient Script Holder" type="Node3D" parent="."]
+script = ExtResource("3_fq617")
+
 [node name="Pickup Label" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 visible = false
@@ -38,9 +41,6 @@ mesh = ExtResource("2_fq617")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("SphereShape3D_njak0")
-
-[node name="Ingredient Script Holder" type="Node3D" parent="."]
-script = ExtResource("3_fq617")
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]

@@ -104,11 +104,18 @@ func drop_item():
 			if is_facing_target(countertop):
 				var snap_point = countertop.get_node("SnapPoint")
 				dropped_item.reparent(countertop)
+				if dropped_item.get_child(0).has_method("set_countertop"):
+					print("set countertop to " + countertop.name)
+					dropped_item.get_child(0).set_countertop(countertop)
 				dropped_item.global_transform = snap_point.global_transform
 
 				# Optional: disable physics so it stays perfectly placed
 				if dropped_item is RigidBody3D:
 					dropped_item.freeze = true
+
+				# Tell the item which countertop it's on
+				if dropped_item.has_method("set_countertop"):
+					dropped_item.set_countertop(countertop)
 			else:
 				# Drop normally in front of player if not facing the target
 				print("Target is in range but not facing the right direction. Dropping item.")
@@ -118,6 +125,10 @@ func drop_item():
 				if dropped_item is RigidBody3D:
 					dropped_item.freeze = false
 					dropped_item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2))
+
+				# Clear countertop reference if the item supports it
+				if dropped_item.has_method("clear_countertop"):
+					dropped_item.clear_countertop()
 		else:
 			# Drop normally in front of player
 			dropped_item.reparent(get_parent())
@@ -126,6 +137,10 @@ func drop_item():
 			if dropped_item is RigidBody3D:
 				dropped_item.freeze = false
 				dropped_item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2))
+
+			# Clear countertop reference if the item supports it
+			if dropped_item.has_method("clear_countertop"):
+				dropped_item.clear_countertop()
 
 func find_nearby_countertop():
 	var radius = 2.0  # Change as needed
