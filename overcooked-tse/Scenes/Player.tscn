@@ -33,7 +33,7 @@ sides = 20
 material = SubResource("StandardMaterial3D_8ouen")
 
 [node name="HoldPosition" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.550058, 0.254475, 4.76837e-07)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.000934005, -0.149024, -0.789007)
 
 [node name="PlacementPreview" type="Node3D" parent="."]
 
