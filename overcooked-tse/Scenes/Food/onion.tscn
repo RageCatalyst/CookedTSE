@@ -10,7 +10,7 @@ radius = 0.494871
 [sub_resource type="SphereShape3D" id="SphereShape3D_njak0"]
 radius = 2.06045
 
-[node name="Onion" type="RigidBody3D"]
+[node name="Onion" type="RigidBody3D" groups=["onion"]]
 collision_layer = 0
 script = ExtResource("1_yec2b")
 item_name = "Onion"

@@ -1,7 +1,7 @@
 extends Node3D
 
 # Enum for countertop statuses
-enum Status { EMPTY, CHOPPING_BOARD, STOVE, DELIVERY_CONVEYOR }
+enum Status { EMPTY, CHOPPING_BOARD, STOVE, DELIVERY_CONVEYOR, INGREDIENT_BIN }
 @export var status : Status
 
 var item_on_countertop: Node = null
@@ -26,6 +26,8 @@ func _update_attachment_visibility():
 			_set_attachment_visible("stoves")
 		Status.DELIVERY_CONVEYOR:
 			_set_attachment_visible("delivery_conveyors")
+		Status.INGREDIENT_BIN:
+			_set_attachment_visible("ingredient_bins")
 		_:
 			pass
 

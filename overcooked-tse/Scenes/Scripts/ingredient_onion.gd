@@ -69,3 +69,15 @@ func _process(_delta):
 	# Update on_chopping_board if countertop changes
 	if current_countertop:
 		on_chopping_board = current_countertop.has_chopping_board() if current_countertop.has_method("has_chopping_board") else false
+		# Hide label if not on chopping board or not whole
+		if not on_chopping_board or state != State.WHOLE:
+			interact_label.visible = false
+	else:
+		interact_label.visible = false
+
+func _exit_tree():
+	# Always hide the interact label when the onion is removed from the scene tree (e.g., picked up)
+	if interact_label:
+		interact_label.visible = false
+
+# REMINDER: Call clear_countertop() in your pickup logic to ensure the label is hidden and state is reset.

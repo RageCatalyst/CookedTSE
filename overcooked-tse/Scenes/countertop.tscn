@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://db8uogurso5wk"]
+[gd_scene load_steps=13 format=3 uid="uid://db8uogurso5wk"]
 
 [ext_resource type="Script" uid="uid://bmjajaiytj46y" path="res://Scenes/Scripts/countertop.gd" id="1_eqru6"]
 [ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c0x0tvmbhaqck" path="res://addons/proto-csgs/textures/orange/texture_13.png" id="4_6qt3v"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="4_pe3oq"]
 [ext_resource type="Texture2D" uid="uid://bn66p4ar3fje4" path="res://addons/proto-csgs/textures/red/texture_13.png" id="6_rvg4k"]
+[ext_resource type="Texture2D" uid="uid://cmuv3ve5x2al8" path="res://addons/proto-csgs/textures/light/texture_13.png" id="7_b2fvh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wxj5o"]
 size = Vector3(1.99641, 2.12494, 2.00485)
@@ -28,13 +29,19 @@ albedo_texture = ExtResource("6_rvg4k")
 uv1_offset = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fnohm"]
+resource_local_to_scene = true
+albedo_texture = ExtResource("7_b2fvh")
+uv1_offset = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
 [node name="countertop" type="Node3D" groups=["countertops"]]
 script = ExtResource("1_eqru6")
 
 [node name="Countertop" parent="." instance=ExtResource("1_wxj5o")]
 transform = Transform3D(0.665, 0, 0, 0, 0.665, 0, 0, 0, 0.665, 0, 0.662647, 0)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Countertop"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Countertop" groups=["countertops"]]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Countertop/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.29425e-05, 0.0594788, 0.00331116)
@@ -68,3 +75,12 @@ transform = Transform3D(1.175, 0, 0, 0, 1.175, 0, 0, 0, 1.175, 0, 1.39366, 0)
 size = Vector3(1, 0.0518008, 1)
 material = SubResource("StandardMaterial3D_vimie")
 block_color = 5
+
+[node name="ingredient_bin" type="Node3D" parent="." groups=["ingredient_bins"]]
+visible = false
+
+[node name="ProtoCSGBox3D" parent="ingredient_bin" instance=ExtResource("3_6qt3v")]
+transform = Transform3D(1.175, 0, 0, 0, 1.175, 0, 0, 0, 1.175, 0, 1.39366, 0)
+size = Vector3(1, 0.0518008, 1)
+material = SubResource("StandardMaterial3D_fnohm")
+block_color = 2
