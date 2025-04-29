@@ -9,6 +9,7 @@ const SPEED = 5.0
 
 func _enter_tree():
 	set_multiplayer_authority(name.to_int())
+
 @onready var placement_preview = $PlacementPreview
 var preview_scene = preload("res://Scenes/Food/IngredientPreview.tscn")
 var preview_instance: Node3D = null
@@ -33,6 +34,9 @@ func _physics_process(delta: float) -> void:
 		_handle_placement_preview()
 	else:
 		_remove_placement_preview()
+
+	_handle_movement()
+	move_and_slide()
 
 func _handle_placement_preview():
 	var countertop = get_facing_countertop()
@@ -70,10 +74,6 @@ func _remove_placement_preview():
 	if preview_instance:
 		preview_instance.queue_free()
 		preview_instance = null
-
-func _physics_process(_delta: float) -> void:
-	_handle_movement()
-	move_and_slide()
 
 func _handle_movement() -> void:
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
