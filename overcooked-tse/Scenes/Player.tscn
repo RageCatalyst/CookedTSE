@@ -20,6 +20,11 @@ albedo_texture = ExtResource("5_nn08x")
 uv1_offset = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_kyqiw"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = false
+properties/0/replication_mode = 1
+
 [node name="CharacterBody3D" type="CharacterBody3D" groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("1_b71vn")

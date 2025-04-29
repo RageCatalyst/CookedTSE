@@ -7,6 +7,8 @@ const SPEED = 5.0
 
 @onready var hold_position = $HoldPosition
 
+func _enter_tree():
+	set_multiplayer_authority(name.to_int())
 @onready var placement_preview = $PlacementPreview
 var preview_scene = preload("res://Scenes/Food/IngredientPreview.tscn")
 var preview_instance: Node3D = null
@@ -22,6 +24,11 @@ func _process(_delta: float) -> void:
 		if held_item:
 			drop_item()
 
+func _physics_process(delta: float) -> void:
+	if is_multiplayer_authority():
+		# Add the gravity.
+		if not is_on_floor():
+			velocity += get_gravity() * delta
 	if held_item:
 		_handle_placement_preview()
 	else:
