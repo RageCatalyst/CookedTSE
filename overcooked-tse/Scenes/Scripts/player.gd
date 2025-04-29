@@ -89,6 +89,7 @@ func _handle_movement() -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.z = move_toward(velocity.z, 0, SPEED)
+		
 
 func is_facing_target(target_node: Node3D, max_angle_degrees := 60.0) -> bool:
 	var to_target = (target_node.global_transform.origin - global_transform.origin).normalized()
