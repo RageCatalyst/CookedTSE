@@ -1,9 +1,9 @@
 extends Node3D
 
-@export var item_name: String = "Carrot"  # Set the item type
+@export var item_name: String = ""  # Set the item type
 @export var pickup_range: float = 2.0  # How close the player must be
 
-@onready var pickup_label = $Label3D  # Reference the label
+@onready var pickup_label = $"Pickup Label"  # Reference the label
 
 @onready var timer_node = $"../Timer"
 
@@ -19,6 +19,9 @@ func _ready():
 func _process(_delta):
 	if player_in_range and Input.is_action_just_pressed("interact"):  # Check for "E" key
 		_pickup()
+	
+	# move label
+	pickup_label.global_transform.origin = global_transform.origin + Vector3(0, 1.5, 0)
 
 func _drop():
 	print(player.name + " dropped " + item_name)

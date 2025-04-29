@@ -9,6 +9,6 @@ var timer = Timer
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if player:
+	if is_multiplayer_authority():
 		var _calculated_position := player.global_transform.origin + _camera_offset
 		global_transform.origin = lerp(global_transform.origin, _calculated_position, smooth_speed * delta)
