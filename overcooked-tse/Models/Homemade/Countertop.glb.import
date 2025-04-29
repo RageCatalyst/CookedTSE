@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://b83igxijffe5"
-path="res://.godot/imported/Carrot.glb-e6b8aea26a73e23e7b150c0174593def.scn"
+uid="uid://lbx7q4dmc1v8"
+path="res://.godot/imported/Countertop.glb-17085aa1413f490305c7db5d1b921a03.scn"
 
 [deps]
 
-source_file="res://Models/Carrot.glb"
-dest_files=["res://.godot/imported/Carrot.glb-e6b8aea26a73e23e7b150c0174593def.scn"]
+source_file="res://Models/Homemade/Countertop.glb"
+dest_files=["res://.godot/imported/Countertop.glb-17085aa1413f490305c7db5d1b921a03.scn"]
 
 [params]
 
