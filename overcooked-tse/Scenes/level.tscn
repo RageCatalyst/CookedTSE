@@ -1,7 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://n14oq1723pyp"]
+[gd_scene load_steps=9 format=3 uid="uid://n14oq1723pyp"]
 
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
-[ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
 [ext_resource type="PackedScene" uid="uid://dxw7cledbpiia" path="res://addons/proto-csgs/proto_csg_box_3d.tscn" id="6_6bp64"]
 [ext_resource type="PackedScene" uid="uid://cnniox8lkfqsr" path="res://Scenes/Food/onion.tscn" id="6_21xkr"]
@@ -20,9 +19,6 @@ data = PackedVector3Array(-22.0833, -6.90035, 12.0767, -22.0833, 6.90035, -12.07
 [node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" parent="." instance=ExtResource("1_bdal3")]
-
-[node name="Player" parent="." instance=ExtResource("4_0txjt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.59015, 0)
 
 [node name="CameraContainer" parent="." instance=ExtResource("5_2xg1d")]
 transform = Transform3D(1, 0, 0, 0, 0.999966, 0.00825533, 0, -0.00825533, 0.999966, 0, 13.2422, 11.439)
@@ -201,4 +197,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.38825, 0.231706, -2.01185)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.71264, 0.677684, 0.284615)
 
 [node name="Onion2" parent="." instance=ExtResource("6_21xkr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.71264, 0.677684, 0.284615)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.10923, 1.79858, -1.38401)

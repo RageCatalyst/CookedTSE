@@ -1,22 +1,29 @@
-# Source: https://www.youtube.com/watch?v=K62jDMLPToA
-
 extends Node
 
+@onready var multiplayer_ui = $UI
+const PLAYER = preload("res://Scenes/Player.tscn")
+
 var peer = ENetMultiplayerPeer.new()
-@export var player_scene: PackedScene
 
 func _on_host_pressed():
-	peer.create_server(135)
+	peer.create_server(25565)
 	multiplayer.multiplayer_peer = peer
-	multiplayer.peer_connected.connect(_add_player)
-	_add_player()
+	multiplayer.peer_connected.connect(
+		func(pid):
+			print("Peer " + str(pid) + " has joined the game!")
+			_add_player(pid)
+	)
+	_add_player(multiplayer.get_unique_id())
+	multiplayer_ui.hide()
 	
-func _add_player(id = 1):
-	var player = player_scene.instantiate()
-	player.name = str(id)
-	call_deferred("add_child", player)
+func _add_player(pid):
+	var player = PLAYER.instantiate()
+	player.name = str(pid)
+	add_child(player)
+	player.position = Vector3(0, 5, 0)
+
 
 func _on_connect_pressed():
-	peer.create_client("localhost", 135)
+	peer.create_client("localhost", 25565)
 	multiplayer.multiplayer_peer = peer
-	
+	multiplayer_ui.hide()

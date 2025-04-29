@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://puim1oqq8yoh"]
+
+[ext_resource type="Script" uid="uid://c8wsr01o0xo8o" path="res://Scenes/multiplayer.gd" id="1_wrm1d"]
+[ext_resource type="PackedScene" uid="uid://n14oq1723pyp" path="res://Scenes/level.tscn" id="3_wowpa"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_wrm1d")
+
+[node name="Level" parent="." instance=ExtResource("3_wowpa")]
+
+[node name="LevelSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://bd6ae1vio0ubo")
+spawn_path = NodePath("..")
+spawn_limit = 1
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 35.0
+offset_top = 6.0
+offset_right = 75.0
+offset_bottom = 46.0
+
+[node name="Net" type="VBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = -29.0
+offset_right = 67.0
+offset_bottom = 40.0
+
+[node name="Options" type="HBoxContainer" parent="UI/Net"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/Net/Options"]
+layout_mode = 2
+text = "Direct:"
+
+[node name="Host" type="Button" parent="UI/Net/Options"]
+layout_mode = 2
+text = "Host"
+
+[node name="Connect" type="Button" parent="UI/Net/Options"]
+layout_mode = 2
+text = "Connect"
+
+[node name="Remote" type="LineEdit" parent="UI/Net/Options"]
+layout_mode = 2
+text = "0.0.0.0:135"
+placeholder_text = "IP Address"
+expand_to_text_length = true
+
+[connection signal="pressed" from="UI/Net/Options/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="UI/Net/Options/Connect" to="." method="_on_connect_pressed"]

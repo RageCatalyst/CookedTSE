@@ -8,7 +8,8 @@ const SPEED = 5.0
 @onready var hold_position = $HoldPosition
 
 func _enter_tree():
-	set_multiplayer_authority(name.to_int())
+	set_multiplayer_authority(int(str(name)))
+	
 
 @onready var placement_preview = $PlacementPreview
 var preview_scene = preload("res://Scenes/Food/IngredientPreview.tscn")
@@ -26,17 +27,17 @@ func _process(_delta: float) -> void:
 			drop_item()
 
 func _physics_process(delta: float) -> void:
-	if is_multiplayer_authority():
-		# Add the gravity.
-		if not is_on_floor():
-			velocity += get_gravity() * delta
+	if !is_multiplayer_authority():
+		return
+	
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+	_handle_movement()
+	move_and_slide()
 	if held_item:
 		_handle_placement_preview()
 	else:
 		_remove_placement_preview()
-
-	_handle_movement()
-	move_and_slide()
 
 func _handle_placement_preview():
 	var countertop = get_facing_countertop()
