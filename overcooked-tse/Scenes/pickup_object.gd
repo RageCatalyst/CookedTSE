@@ -1,11 +1,9 @@
-extends Node3D
+extends RigidBody3D
 
-@export var item_name: String = ""  # Set the item type
+@export var item_name: String = "Carrot"  # Set the item type
 @export var pickup_range: float = 2.0  # How close the player must be
 
-@onready var pickup_label = $"Pickup Label"  # Reference the label
-
-@onready var timer_node = $"../Timer"
+@onready var pickup_label = $Label3D  # Reference the label
 
 var timer_started = false # Ensures timer only starts the one time
 
@@ -19,16 +17,16 @@ func _ready():
 func _process(_delta):
 	if player_in_range and Input.is_action_just_pressed("interact"):  # Check for "E" key
 		_pickup()
-	
-	# move label
-	pickup_label.global_transform.origin = global_transform.origin + Vector3(0, 1.5, 0)
 
 func _drop():
 	print(player.name + " dropped " + item_name)
 	player.drop_item(self)
 
 func _pickup():
-	timer_node._start_timer()
+	if timer_started == false:
+		$"../Timer".start() # starts the timer when the player picks up the object for the first time (will be changed)
+		timer_started = true
+		print("Timer start")
 	print(player.name + " picked up " + item_name)
 	player.pick_up_item(self)
 	pickup_label.visible = false
@@ -46,4 +44,3 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 		player_in_range = false
 		player = null
 		pickup_label.visible = false  # Hide label when player leaves
-	
