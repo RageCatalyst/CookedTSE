@@ -23,7 +23,7 @@ var matched_recipe_output: String = "" # Name of the meal being cooked
 # Key: Output meal name (String)
 # Value: Dictionary { Ingredient Name (String): Count (int) }
 const recipes = {
-	"Onion Soup": { "Chopped Onion": 3 }
+	"Onion Soup": { "chopped onion": 3 }
 	# Add more recipes here, e.g.,
 	# "Mushroom Soup": { "Chopped Mushroom": 2, "Chopped Onion": 1 },
 	# "Tomato Soup": { "Chopped Tomato": 3 }
