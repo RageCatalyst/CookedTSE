@@ -8,7 +8,7 @@ signal item_picked_up
 
 # Add reference to the mesh that will have the outline
 # Adjust the path if your mesh node has a different name or location
-@onready var visual_mesh: MeshInstance3D = $MeshInstance3D
+@export var visual_mesh: MeshInstance3D = null
 
 # Removed export
 var outline_material: ShaderMaterial # Re-added non-export variable
@@ -23,13 +23,45 @@ var timer_started = false # Ensures timer only starts the one time
 var _is_on_countertop: bool = false # Track if the ingredient is on a countertop
 
 func _ready():
-	# Automatically find the ShaderMaterial in the MeshInstance3D's Material Override
-	if visual_mesh and visual_mesh.material_override is ShaderMaterial:
-		outline_material = visual_mesh.material_override
-		# Ensure outline is initially disabled
-		outline_material.set_shader_parameter("outline_enabled", false)
+	if visual_mesh:
+		if visual_mesh.mesh and visual_mesh.mesh.get_surface_count() > 0:
+			# 1. Get the original base material (could be from mesh or an override)
+			var original_base_material = visual_mesh.get_active_material(0)
+
+			if original_base_material and original_base_material is StandardMaterial3D and original_base_material.next_pass is ShaderMaterial:
+				# 2. Get the shared outline shader material
+				var shared_outline_material = original_base_material.next_pass
+
+				# 3. Duplicate the BASE material to make it unique
+				var unique_base_material = original_base_material.duplicate()
+				if not unique_base_material:
+					printerr("PickupObject: Failed to duplicate base material for: ", name)
+					return
+
+				# 4. Duplicate the OUTLINE material to make it unique
+				outline_material = shared_outline_material.duplicate()
+				if not outline_material:
+					printerr("PickupObject: Failed to duplicate outline material for: ", name)
+					# Clean up the duplicated base material if outline fails
+					# unique_base_material.free() # Cannot free resource directly
+					return
+
+				# 5. Assign the unique outline material to the unique base material's next_pass
+				unique_base_material.next_pass = outline_material
+
+				# 6. Assign the unique base material (with its unique next_pass)
+				#    to the Surface Material Override slot 0 for this specific MeshInstance3D
+				visual_mesh.set_surface_override_material(0, unique_base_material)
+
+				# 7. Ensure outline is initially disabled on the unique outline material
+				outline_material.set_shader_parameter("outline_enabled", false)
+
+			else:
+				printerr("PickupObject: Could not find StandardMaterial3D with a ShaderMaterial in next_pass for: ", name)
+		else:
+			printerr("PickupObject: Mesh resource has no surfaces for: ", name)
 	else:
-		printerr("PickupObject: Could not find ShaderMaterial in material_override for: ", name)
+		printerr("PickupObject: Visual mesh not assigned for: ", name) # Changed error message slightly
 
 	# Connect the signal
 	self.connect("item_picked_up", timer_node._on_item_picked_up)
