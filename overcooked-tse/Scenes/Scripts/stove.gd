@@ -7,6 +7,9 @@ enum State { IDLE, COOKING, COOKING_COMPLETE, BURNT }
 # --- Exports ---
 @export var cooking_duration: float = 5.0 # Time to cook a valid recipe
 @export var burn_duration: float = 10.0 # Time after cooking completes before it burns
+@export var onion_soup_scene: PackedScene
+@export var mushroom_soup_scene: PackedScene
+@export var tomato_soup_scene: PackedScene
 
 # --- State ---
 var current_state: State = State.IDLE
@@ -23,10 +26,11 @@ var matched_recipe_output: String = "" # Name of the meal being cooked
 # Key: Output meal name (String)
 # Value: Dictionary { Ingredient Name (String): Count (int) }
 const recipes = {
-	"Onion Soup": { "chopped onion": 3 }
-	# Add more recipes here, e.g.,
+	"Onion Soup": { "chopped onion": 3 },
+	"Mushroom Soup": { "chopped mushroom": 3 }, # Assuming 3 chopped mushrooms for now
+	"Tomato Soup": { "chopped tomato": 3 } # Assuming 3 chopped tomatoes for now
+	# Adjust Mushroom/Tomato recipes if needed, e.g.,
 	# "Mushroom Soup": { "Chopped Mushroom": 2, "Chopped Onion": 1 },
-	# "Tomato Soup": { "Chopped Tomato": 3 }
 }
 
 func _ready():
@@ -229,12 +233,70 @@ func _burn_food():
 
 func _deliver_meal():
 	print("Stove: Delivering ", matched_recipe_output)
-	# TODO: Implement meal spawning/delivery
-	# 1. Find the PackedScene for the meal (e.g., load("res://Scenes/Meals/onion_soup.tscn"))
-	# 2. Instantiate the meal scene
-	# 3. Place the meal (e.g., on the stove, or give to player?)
-	# For now, just clear ingredient counts
 
+	var countertop = get_parent() # Assuming stove is a direct child of the countertop
+
+	# Check if the parent is a valid Countertop and has the place_item method
+	if not (countertop is Countertop and countertop.has_method("place_item")):
+		printerr("Stove: Parent is not a Countertop or is missing the 'place_item' method!")
+		printerr("Stove: Ensure the Stove node is a direct child of a Countertop node.")
+		# Clear state even if placement fails
+		_clear_ingredients()
+		current_state = State.IDLE
+		matched_recipe_output = ""
+		return
+
+	# Check if the countertop is already occupied (place_item might also check this, but good to be safe)
+	if countertop.get_item() != null:
+		print("Stove: Cannot deliver meal, countertop is already occupied.")
+		# Don't clear state yet, maybe player will clear the counter
+		# Or, decide if the meal should be lost. For now, just stop.
+		# If you want the meal lost, uncomment the lines below:
+		# _clear_ingredients()
+		# current_state = State.IDLE
+		# matched_recipe_output = ""
+		return
+
+
+	var meal_scene: PackedScene = null
+
+	# 1. Find the PackedScene for the meal
+	match matched_recipe_output:
+		"Onion Soup":
+			if onion_soup_scene:
+				meal_scene = onion_soup_scene
+			else:
+				printerr("Stove: Onion Soup scene not assigned in the editor!")
+		"Mushroom Soup":
+			if mushroom_soup_scene:
+				meal_scene = mushroom_soup_scene
+			else:
+				printerr("Stove: Mushroom Soup scene not assigned in the editor!")
+		"Tomato Soup":
+			if tomato_soup_scene:
+				meal_scene = tomato_soup_scene
+			else:
+				printerr("Stove: Tomato Soup scene not assigned in the editor!")
+		_:
+			printerr("Stove: Unknown matched recipe output: ", matched_recipe_output)
+
+	if meal_scene:
+		# 2. Instantiate the meal scene
+		var meal_instance = meal_scene.instantiate()
+
+		# 3. Add to scene tree BEFORE passing to place_item
+		#    This ensures the node is valid when place_item tries to reparent/position it.
+		get_tree().current_scene.add_child(meal_instance)
+
+		# 4. Use the countertop's function to place the item
+		countertop.place_item(meal_instance) # place_item should handle positioning and setting current_item
+
+		print("Stove: Spawned and placed ", matched_recipe_output, " on countertop ", countertop.name)
+	else:
+		print("Stove: Could not spawn meal due to missing scene assignment.")
+
+
+	# Clear stove state regardless of successful spawn (as cooking is done)
 	_clear_ingredients() # Clears counts
 	current_state = State.IDLE
 	matched_recipe_output = ""

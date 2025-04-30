@@ -36,8 +36,55 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("exit"):
 		get_tree().quit()
 
+	# --- Debug Controls ---
+	# Corrected action name to "debug_process"
+	if event.is_action_pressed("debug_process"): # Defined in Input Map (e.g., 'B' key)
+		if held_item != null:
+			# Use the existing helper to find the node with the ingredient script
+			# Ensure held_item is treated as PickupObject if _get_ingredient_script expects it
+			var ingredient_script_node = null
+			if held_item is PickupObject:
+				ingredient_script_node = _get_ingredient_script(held_item)
+			else:
+				# If held_item might not be a PickupObject directly, adjust finding logic
+				print("DEBUG: Held item is not a PickupObject, cannot find ingredient script this way.")
+
+
+			if ingredient_script_node:
+				# Check if the ingredient script has the 'finish_processing' method
+				if ingredient_script_node.has_method("finish_processing"):
+					# Check if the ingredient has the 'current_state' property using 'in'
+					if "current_state" in ingredient_script_node:
+						# Check if the ingredient is in the WHOLE state
+						# Access the enum via the instance: ingredient_script_node.State.WHOLE
+						if ingredient_script_node.current_state == ingredient_script_node.State.WHOLE:
+							print("DEBUG: Forcing processing on held item: ", held_item.name)
+							ingredient_script_node.finish_processing() # Call the correct function
+						else:
+							print("DEBUG: Held item is not in WHOLE state (State: %s)." % ingredient_script_node.current_state)
+					else:
+						print("DEBUG: Ingredient script node does not have 'current_state' property.")
+				else:
+					print("DEBUG: Ingredient script node does not have 'finish_processing' method.")
+			else:
+				print("DEBUG: Could not find ingredient script node for held item.")
+		else:
+			print("DEBUG: Not holding any item to process.")
+
+
 func _process(_delta: float) -> void:
 	# Handle interaction input
+	# Moved interaction logic to _physics_process or specific input handling
+	# to avoid issues with physics state checking in _process
+	pass # Keep _process if needed for other non-physics things
+
+func _physics_process(delta: float) -> void:
+	if is_multiplayer_authority():
+		# Add the gravity.
+		if not is_on_floor():
+			velocity += get_gravity() * delta
+
+	# Handle interaction input here as it often relates to physics state (nearby objects)
 	if Input.is_action_just_pressed("interact"):
 		if held_item:
 			drop_item() # Existing drop logic
@@ -45,12 +92,6 @@ func _process(_delta: float) -> void:
 			# Tell the highlighted item it's being picked up
 			if currently_highlighted_pickup.has_method("get_picked_up"):
 				currently_highlighted_pickup.get_picked_up(self)
-
-func _physics_process(delta: float) -> void:
-	if is_multiplayer_authority():
-		# Add the gravity.
-		if not is_on_floor():
-			velocity += get_gravity() * delta
 
 	# Update pickup highlighting
 	_update_pickup_highlight()

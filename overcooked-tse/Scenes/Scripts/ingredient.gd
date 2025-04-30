@@ -91,6 +91,7 @@ func _input(event):
 			stop_processing()
 
 
+
 func _process(delta):
 	# Ensure node is in the tree before accessing global_transform or updating labels
 	if not is_inside_tree():
