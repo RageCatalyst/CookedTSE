@@ -25,3 +25,6 @@ func _start_timer() -> void:
 		start()  # Call Timer.start() directly
 		timer_started = true
 		print("Timer start")
+
+func _on_item_picked_up():
+	_start_timer()

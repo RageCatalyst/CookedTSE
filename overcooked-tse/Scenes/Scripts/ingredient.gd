@@ -12,6 +12,7 @@ enum State { WHOLE, PROCESSED }
 @export var processed_scene: PackedScene = null # Scene to spawn when processed (e.g., ChoppedOnion.tscn)
 @export var processing_time: float = 2.0 # Time needed to process (e.g., chop)
 @export var can_be_processed: bool = true # Can this ingredient be processed (chopped, cooked, etc.)?
+@export var mesh_node_path: NodePath = ^"MeshInstance3D" # Export the path, default to "MeshInstance3D"
 
 # --- State ---
 var current_state: State = State.WHOLE
@@ -22,7 +23,7 @@ var processing_timer: float = 0.0
 # Assume this script is attached to a Node3D within the ingredient's main scene (e.g., RigidBody3D)
 # The MeshInstance should be a sibling or child relative to where this script is attached.
 # Adjust the path "../MeshInstanceName" as needed for your scene structure.
-@onready var mesh_instance: MeshInstance3D = get_parent().get_node_or_null("OnionMesh") # IMPORTANT: Adjust path if needed!
+@onready var mesh_instance: MeshInstance3D = get_node_or_null(mesh_node_path) # NEW WAY: Use exported path
 @onready var interact_label: Label3D = Label3D.new()
 @onready var progress_label: Label3D = Label3D.new()
 
@@ -209,6 +210,9 @@ func set_countertop(countertop_node):
 
 	# Notify the parent pickup script
 	var parent_pickup = get_parent()
+	# --- DEBUG PRINT --- 
+	print("[Ingredient] Attempting set_on_countertop_status(true) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(true)
 	else:
@@ -220,6 +224,9 @@ func set_countertop(countertop_node):
 func remove_from_countertop():
 	# Notify the parent pickup script first
 	var parent_pickup = get_parent()
+	# --- DEBUG PRINT --- 
+	print("[Ingredient] Attempting set_on_countertop_status(false) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(false)
 	# else: # Don't necessarily print error on removal, might be picked up
@@ -237,6 +244,9 @@ func clear_countertop():
 
 	# Also notify pickup script that it's no longer on a countertop
 	var parent_pickup = get_parent()
+	# --- DEBUG PRINT --- 
+	print("[Ingredient] Attempting set_on_countertop_status(false) on parent (clear_countertop): ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(false)
 
@@ -281,3 +291,23 @@ func _update_interact_label_visibility():
 # 	current_state = State.PROCESSED if current_state == State.WHOLE else State.WHOLE
 # 	update_visuals()
 # 	print("New state: ", current_state)
+
+
+func set_outline(enabled: bool):
+	# Check if the mesh_instance node reference is valid
+	if not is_instance_valid(mesh_instance):
+		printerr("IngredientBase ({name}): Cannot set outline, mesh_instance is invalid or path '{mesh_node_path}' is wrong!")
+		return
+
+	# Get the material override from the mesh instance
+	# We assume the outline material is placed in the 'Material Override' slot
+	var mat = mesh_instance.material_override
+
+	# Check if the material override exists and is a ShaderMaterial
+	if mat is ShaderMaterial:
+		# Set the 'outline_enabled' parameter in the shader
+		mat.set_shader_parameter("outline_enabled", enabled)
+		# print(f"IngredientBase ({name}): Outline set to {enabled}") # Optional debug print
+	else:
+		# Print a warning if the material isn't set up correctly
+		printerr("IngredientBase ({name}): Material override on '{mesh_instance.name}' is not a ShaderMaterial or is null. Cannot set outline.")
