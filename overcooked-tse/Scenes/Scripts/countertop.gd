@@ -1,4 +1,5 @@
 extends Node3D
+class_name Countertop
 
 # Enum for countertop statuses
 enum Status { EMPTY, CHOPPING_BOARD, STOVE, DELIVERY_CONVEYOR, INGREDIENT_BIN }
@@ -54,8 +55,18 @@ func remove_item():
 func get_item() -> Node:
 	return item_on_countertop
 
+# New helper function to get the stove node if this is a stove countertop
+func get_stove_node() -> Stove:
+	if status != Status.STOVE:
+		return null
+	for child in get_children():
+		if child is Stove and child.is_in_group("stoves"):
+			return child
+	printerr("Countertop: Status is STOVE but no Stove child node found in 'stoves' group!")
+	return null
+
 # Called by ingredient when placed on/removed from this countertop
-func set_on_countertop_status(status: bool):
+func set_on_countertop_status(_status: bool): # Renamed parameter to fix shadowing and unused warning
 	# This function is needed to prevent errors when an ingredient calls it on its parent (this countertop).
 	# You can add logic here if the countertop needs to know if an ingredient is on it.
 	# For now, it just prevents the "method not found" error.

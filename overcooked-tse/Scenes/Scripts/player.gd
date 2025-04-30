@@ -7,6 +7,8 @@ const SPEED = 5.0
 
 @onready var hold_position = $HoldPosition
 @onready var interaction_area: Area3D = $InteractionArea # Assign in editor or ensure name matches
+@onready var ray_cast: RayCast3D = $CountertopRaycast
+
 
 # List to track nearby pickup objects
 var nearby_pickups: Array[PickupObject] = []
@@ -196,7 +198,7 @@ func _handle_placement_preview():
 					preview_instance.set_ingredient_type(held_item_ingredient_name)
 			if preview_instance:
 				preview_instance.visible = true
-			return
+			return # Return if snap point found and preview handled
 	_remove_placement_preview()
 
 func _remove_placement_preview():
@@ -258,58 +260,83 @@ func drop_item():
 	var dropped_item = held_item
 	held_item = null
 	print("player dropped: " + dropped_item.name)
+
 	var countertop = get_facing_countertop()
+
+	# Check if facing a valid countertop target
 	if countertop and is_facing_target(countertop):
-		_snap_item_to_countertop(dropped_item, countertop)
-	else:
-		_drop_item_in_front(dropped_item)
+		# Case 1: Is it a stove countertop?
+		if countertop.status == Countertop.Status.STOVE:
+			var stove = countertop.get_stove_node()
+			# Is the stove idle?
+			if stove and stove.current_state == Stove.State.IDLE:
+				print("Player adding ingredient to stove via countertop: ", dropped_item.name)
+				stove.add_ingredient(dropped_item) # Stove handles deleting the node
+				return # SUCCESS: Item added to stove
+			# else: Stove is busy or invalid, fall through to drop in front
+
+		# Case 2: Is it a non-stove countertop and empty?
+		elif countertop.status != Countertop.Status.STOVE and countertop.get_item() == null:
+			_snap_item_to_countertop(dropped_item, countertop)
+			return # SUCCESS: Item snapped to regular countertop
+		# else: Regular countertop is occupied, fall through to drop in front
+
+	# Fallback: No valid countertop target, or target was occupied/busy
+	_drop_item_in_front(dropped_item)
 
 func _snap_item_to_countertop(item, countertop):
+	# Double-check if countertop is free before proceeding (belt and braces)
+	if countertop.get_item() != null:
+		print("Countertop occupied, dropping in front instead.")
+		_drop_item_in_front(item)
+		return
+
 	var snap_point = countertop.get_node_or_null("SnapPoint")
 	if snap_point:
+		# Tell the countertop it now holds this item *before* reparenting
+		countertop.place_item(item)
+
 		item.reparent(countertop)
 		item.global_transform = snap_point.global_transform
 		if item is RigidBody3D:
-			item.freeze = true
+			item.freeze = true # Keep physics frozen
 
 		# Find the node with the ingredient script and call set_countertop
 		var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false) # Recursive search, ignore owner
 		if ingredient_script_node and ingredient_script_node.has_method("set_countertop"):
 			ingredient_script_node.set_countertop(countertop)
 		else:
-			# Fallback: Check if the script is on the root item itself (less likely now)
-			if item.has_method("set_countertop"):
-				item.set_countertop(countertop)
-			else:
-				printerr("Could not find ingredient script with set_countertop method on ", item.name)
-
+			printerr("Player: Could not find ingredient script node or set_countertop method on dropped item:", item.name)
 	else:
-		print("SnapPoint not found on countertop: ", countertop.name)
+		printerr("Player: Countertop missing SnapPoint node:", countertop.name)
+		# Fallback if snap point is missing but countertop was somehow deemed free
+		_drop_item_in_front(item)
 
 func _drop_item_in_front(item):
 	item.reparent(get_parent()) # Reparent to the main scene tree
 	item.global_transform.origin = global_transform.origin + facing_direction * 1.5 # Use facing direction
 	if item is RigidBody3D:
-		item.freeze = false
-		# item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2)) # Optional impulse
+		item.freeze = false # Unfreeze physics when dropped on the ground
 
 	# Find the node with the ingredient script and call remove_from_countertop
+	# This ensures its internal state knows it's not on a counter anymore
 	var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false)
 	if ingredient_script_node and ingredient_script_node.has_method("remove_from_countertop"):
 		ingredient_script_node.remove_from_countertop()
-	else:
-		# Fallback: Check if the script is on the root item itself
-		if item.has_method("remove_from_countertop"):
-			item.remove_from_countertop()
+	# else: # Don't necessarily error if it wasn't on a countertop to begin with
+	# 	printerr("Player: Could not find ingredient script node or remove_from_countertop method on dropped item:", item.name)
 
 # Returns the countertop directly in front of the player using a RayCast3D node named 'CountertopRaycast'
 func get_facing_countertop():
-	var raycast = $CountertopRaycast
-	if raycast.is_colliding():
-		var collider = raycast.get_collider()
-		if collider and collider.is_in_group("countertops"):
-			#print("Countertop found: " + collider.name)
-			return collider.get_parent().get_parent()  # Assuming the countertop is a child of the parent node
+	if ray_cast.is_colliding():
+		var collider = ray_cast.get_collider()
+
+		# Traverse up the tree from the collider to find the Countertop node
+		var current_node = collider
+		while current_node:
+			if current_node is Countertop:
+				return current_node
+			current_node = current_node.get_parent()
 	return null
 
 func show_preview(countertop: Node3D, ingredient_type: String):

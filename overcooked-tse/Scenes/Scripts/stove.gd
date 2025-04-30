@@ -11,7 +11,8 @@ enum State { IDLE, COOKING, COOKING_COMPLETE, BURNT }
 # --- State ---
 var current_state: State = State.IDLE
 var cooking_timer: float = 0.0
-var current_ingredients: Array[Node] = [] # Ingredients currently on the stove
+# Changed from Array[Node] to Dictionary storing counts
+var current_ingredient_counts: Dictionary = {}
 var matched_recipe_output: String = "" # Name of the meal being cooked
 
 # --- Node References ---
@@ -62,29 +63,50 @@ func _process(delta: float):
 
 # --- Public Methods (Called by Player/Countertop/Item) ---
 
-# Placeholder: How ingredients get added needs implementation
-# This might be called by the player script when dropping an item onto the stove area
+# Called by the player script when dropping an item onto the stove area
 func add_ingredient(ingredient_node: Node):
-    if current_state == State.IDLE:
-        # TODO: Check if ingredient_node is a valid ingredient type
-        # Assuming ingredient_node is the PickupObject root
-        if ingredient_node.has_method("get_item_name"): # Check if it has item_name property/method
-            print("Stove: Added ingredient - ", ingredient_node.get_item_name())
-            current_ingredients.append(ingredient_node)
-            # Optional: Check immediately if a recipe is matched
-            _check_for_recipe()
-        else:
-            printerr("Stove: Tried to add node without item_name: ", ingredient_node.name)
-    else:
+    if current_state != State.IDLE:
         print("Stove: Cannot add ingredient while cooking or finished.")
+        # Optional: Consider dropping the item back if stove is busy
+        # _drop_item_back(ingredient_node) # Need to implement this if desired
+        return
 
+    # Find the ingredient script node (assuming it's a child)
+    var ingredient_script_node = ingredient_node.find_child("Ingredient Script Holder", true, false)
 
-# Placeholder: How ingredients are removed (e.g., player picks them up before cooking)
-func remove_ingredient(ingredient_node: Node):
-    if current_ingredients.has(ingredient_node):
-        print("Stove: Removed ingredient - ", ingredient_node.get_item_name())
-        current_ingredients.erase(ingredient_node)
-        # If cooking was based on this, maybe stop? For now, assume cooking only starts manually.
+    if not ingredient_script_node or not ingredient_script_node.has_method("get_item_name") or not ingredient_script_node.has_meta("current_state"):
+        printerr("Stove: Dropped item is not a valid ingredient or missing state/name info: ", ingredient_node.name)
+        # Optional: Drop item back if invalid
+        # _drop_item_back(ingredient_node)
+        return
+
+    # Check if the ingredient is processed
+    # Accessing state directly - ensure IngredientBase.State is accessible or use integer value (1 for PROCESSED)
+    # Assuming IngredientBase is globally accessible via class_name
+    if ingredient_script_node.current_state != IngredientBase.State.PROCESSED:
+        print("Stove: Only processed ingredients can be added. (", ingredient_node.name, " is not processed)")
+        # Optional: Drop item back if not processed
+        # _drop_item_back(ingredient_node)
+        return
+
+    # Ingredient is valid and processed, proceed to add
+    var item_name = ingredient_script_node.get_item_name() # Get name from script node now
+    print("Stove: Added processed ingredient - ", item_name)
+    # Increment count in the dictionary
+    current_ingredient_counts[item_name] = current_ingredient_counts.get(item_name, 0) + 1
+    # --- Add this line to see the current contents ---
+    print("Stove Contents: ", current_ingredient_counts)
+    # --------------------------------------------------
+    # Delete the dropped item node
+    ingredient_node.queue_free()
+    # Check if a recipe is matched now
+    _check_for_recipe()
+
+# Optional helper function if you want to drop items back
+# func _drop_item_back(item_node):
+# 	# This requires access to the player or a way to drop near the stove
+# 	# Simplest might be just not queue_freeing it, player logic handles the rest?
+# 	pass
 
 
 # Called by player interaction
@@ -107,24 +129,17 @@ func interact():
 
 func _check_for_recipe() -> bool:
     matched_recipe_output = "" # Reset
-    var current_counts = {}
 
-    # Count current ingredients by name
-    for item in current_ingredients:
-        if item.has_method("get_item_name"):
-            var item_name = item.get_item_name()
-            current_counts[item_name] = current_counts.get(item_name, 0) + 1
-
-    # Check against each recipe
+    # Check against each recipe using current_ingredient_counts directly
     for meal_name in recipes:
         var recipe_reqs = recipes[meal_name]
-        var recipe_matches = true # Renamed variable from 'match'
+        var recipe_matches = true
         # Check if counts match exactly (both ingredient types and amounts)
-        if current_counts.size() != recipe_reqs.size():
+        if current_ingredient_counts.size() != recipe_reqs.size():
             recipe_matches = false
         else:
             for req_item_name in recipe_reqs:
-                if not current_counts.has(req_item_name) or current_counts[req_item_name] != recipe_reqs[req_item_name]:
+                if not current_ingredient_counts.has(req_item_name) or current_ingredient_counts[req_item_name] != recipe_reqs[req_item_name]:
                     recipe_matches = false
                     break # Mismatch found for this recipe
 
@@ -143,6 +158,7 @@ func _start_cooking():
     print("Stove: Starting to cook ", matched_recipe_output)
     current_state = State.COOKING
     cooking_timer = 0.0
+    # Ingredients are already consumed/deleted, no need to clear nodes here.
     # Show progress bar/cooking visuals
     # if progress_bar: progress_bar.visible = true
     # if visual_indicator: visual_indicator.visible = true # e.g., turn on fire
@@ -170,9 +186,9 @@ func _deliver_meal():
     # 1. Find the PackedScene for the meal (e.g., load("res://Scenes/Meals/onion_soup.tscn"))
     # 2. Instantiate the meal scene
     # 3. Place the meal (e.g., on the stove, or give to player?)
-    # For now, just clear ingredients
+    # For now, just clear ingredient counts
 
-    _clear_ingredients()
+    _clear_ingredients() # Clears counts
     current_state = State.IDLE
     matched_recipe_output = ""
     # Reset visuals
@@ -181,18 +197,16 @@ func _deliver_meal():
 func _clear_burnt_food():
     print("Stove: Clearing burnt food.")
     # TODO: Implement clearing burnt food (maybe requires interaction with bin?)
-    _clear_ingredients()
+    _clear_ingredients() # Clears counts
     current_state = State.IDLE
     matched_recipe_output = ""
     # Reset visuals
 
 
 func _clear_ingredients():
-    print("Stove: Clearing ingredients.")
-    for item in current_ingredients:
-        if is_instance_valid(item):
-            item.queue_free() # Remove ingredient nodes
-    current_ingredients.clear()
+    print("Stove: Clearing ingredient counts.")
+    # No nodes to free, just clear the counts dictionary
+    current_ingredient_counts.clear()
 
 
 # Helper needed for add_ingredient/remove_ingredient

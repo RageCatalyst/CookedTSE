@@ -316,6 +316,7 @@ func player_cannot_interact():
 # 	print("New state: ", current_state)
 
 
+
 func set_outline(enabled: bool):
 	# Check if the mesh_instance node reference is valid
 	if not is_instance_valid(mesh_instance):
