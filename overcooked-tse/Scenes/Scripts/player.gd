@@ -63,6 +63,21 @@ func _physics_process(delta: float) -> void:
 
 # --- Pickup Highlighting Logic ---
 
+# Helper function to find the ingredient script node
+func _get_ingredient_script(pickup_object: PickupObject) -> Node:
+	if not is_instance_valid(pickup_object):
+		return null
+	# Assuming the script is on a child named "Ingredient Script Holder"
+	var ingredient_node = pickup_object.find_child("Ingredient Script Holder", true, false) 
+	if ingredient_node and ingredient_node.has_method("player_can_interact"): # Check for one of the methods
+		return ingredient_node
+	else:
+		# Fallback: Check if the script might be on the pickup object root itself (less likely)
+		if pickup_object.has_method("player_can_interact"):
+			return pickup_object
+	# printerr("Player: Could not find ingredient script node for ", pickup_object.name) # Optional: Reduce noise
+	return null
+
 func _on_interaction_area_body_entered(body: Node3D):
 	# Check if the body is a PickupObject and not already in the list
 	if body is PickupObject and not nearby_pickups.has(body):
@@ -72,23 +87,38 @@ func _on_interaction_area_body_exited(body: Node3D):
 	# Remove the body if it's a PickupObject
 	if body is PickupObject:
 		nearby_pickups.erase(body)
-		# If the exited body was the highlighted one, clear the highlight
+		# If the exited body was the highlighted one, clear the highlight AND interaction state
 		if currently_highlighted_pickup == body:
-			if currently_highlighted_pickup and currently_highlighted_pickup.has_method("disable_highlight"):
-				currently_highlighted_pickup.disable_highlight()
+			if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup):
+				# Tell ingredient it cannot be interacted with
+				var ingredient_script = _get_ingredient_script(currently_highlighted_pickup)
+				if ingredient_script:
+					ingredient_script.player_cannot_interact()
+				
+				# Disable visual highlight
+				if currently_highlighted_pickup.has_method("disable_highlight"):
+					currently_highlighted_pickup.disable_highlight()
+					
 			currently_highlighted_pickup = null
 
 func _update_pickup_highlight():
 	var closest_pickup: PickupObject = null
 	var min_dist_sq = INF
 
-	# If holding an item, ensure nothing is highlighted
+	# If holding an item, ensure nothing is highlighted or interactable
 	if held_item:
-		if currently_highlighted_pickup:
+		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup):
+			# Tell ingredient it cannot be interacted with
+			var ingredient_script = _get_ingredient_script(currently_highlighted_pickup)
+			if ingredient_script:
+				ingredient_script.player_cannot_interact()
+				
+			# Disable visual highlight
 			if currently_highlighted_pickup.has_method("disable_highlight"):
 				currently_highlighted_pickup.disable_highlight()
+				
 			currently_highlighted_pickup = null
-		return
+		return # Exit early if holding an item
 
 	# Find the closest pickup object in range
 	for pickup in nearby_pickups:
@@ -103,17 +133,31 @@ func _update_pickup_highlight():
 			min_dist_sq = dist_sq
 			closest_pickup = pickup
 
-	# Update highlighting based on the closest found object
+	# Update highlighting and interaction state based on the closest found object
 	if closest_pickup != currently_highlighted_pickup:
-		# Disable highlight on the old one (if any)
-		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup) and currently_highlighted_pickup.has_method("disable_highlight"):
-			currently_highlighted_pickup.disable_highlight()
+		# --- Handle the OLD highlighted item ---
+		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup):
+			# Tell OLD ingredient it cannot be interacted with
+			var old_ingredient_script = _get_ingredient_script(currently_highlighted_pickup)
+			if old_ingredient_script:
+				old_ingredient_script.player_cannot_interact()
+				
+			# Disable OLD visual highlight
+			if currently_highlighted_pickup.has_method("disable_highlight"):
+				currently_highlighted_pickup.disable_highlight()
+
+		# --- Handle the NEW highlighted item ---
+		if closest_pickup and is_instance_valid(closest_pickup): # Check validity for the new one too
+			# Tell NEW ingredient it can be interacted with
+			var new_ingredient_script = _get_ingredient_script(closest_pickup)
+			if new_ingredient_script:
+				new_ingredient_script.player_can_interact()
+				
+			# Enable NEW visual highlight
+			if closest_pickup.has_method("enable_highlight"):
+				closest_pickup.enable_highlight()
 		
-		# Enable highlight on the new one (if any)
-		if closest_pickup and closest_pickup.has_method("enable_highlight"):
-			closest_pickup.enable_highlight()
-		
-		# Update the reference
+		# Update the reference AFTER handling both old and new
 		currently_highlighted_pickup = closest_pickup
 
 # Helper to safely remove invalid instances from the list

@@ -18,6 +18,7 @@ enum State { WHOLE, PROCESSED }
 var current_state: State = State.WHOLE
 var _is_processing_internal: bool = false
 var processing_timer: float = 0.0
+var _player_can_interact: bool = false # NEW: Flag set by Player script
 
 # --- Node References ---
 # Assume this script is attached to a Node3D within the ingredient's main scene (e.g., RigidBody3D)
@@ -62,7 +63,7 @@ func _setup_labels():
 	# Setup Progress Label (Initially hidden)
 	print("Creating progress_label...")
 	progress_label = Label3D.new()
-	print("progress_label instance: ", progress_label)
+	#print("progress_label instance: ", progress_label)
 	if not is_instance_valid(progress_label):
 		printerr("Failed to create progress_label instance!")
 		return
@@ -71,15 +72,19 @@ func _setup_labels():
 	progress_label.visible = false
 	progress_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	# Position higher than interact label - will be set in _process
-	print("Adding progress_label as child...")
+	#print("Adding progress_label as child...")
 	add_child(progress_label)
-	print("progress_label added. Parent: ", progress_label.get_parent())
+	#print("progress_label added. Parent: ", progress_label.get_parent())
 
 
 func _input(event):
 	# Start/Stop Processing
-	# Only allow processing if it can be processed, is whole, and is on a chopping board
-	if can_be_processed and current_state == State.WHOLE and on_chopping_board:
+	# Only allow processing if:
+	# - Player can interact (is close/highlighting)
+	# - Ingredient can be processed
+	# - Ingredient is whole
+	# - Ingredient is on a chopping board
+	if _player_can_interact and can_be_processed and current_state == State.WHOLE and on_chopping_board:
 		if event.is_action_pressed("chop") and not _is_processing_internal: # Using "chop" action for now
 			start_processing()
 		elif event.is_action_released("chop") and _is_processing_internal:
@@ -211,7 +216,7 @@ func set_countertop(countertop_node):
 	# Notify the parent pickup script
 	var parent_pickup = get_parent()
 	# --- DEBUG PRINT --- 
-	print("[Ingredient] Attempting set_on_countertop_status(true) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	## print("[Ingredient] Attempting set_on_countertop_status(true) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
 	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(true)
@@ -225,7 +230,7 @@ func remove_from_countertop():
 	# Notify the parent pickup script first
 	var parent_pickup = get_parent()
 	# --- DEBUG PRINT --- 
-	print("[Ingredient] Attempting set_on_countertop_status(false) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	## print("[Ingredient] Attempting set_on_countertop_status(false) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
 	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(false)
@@ -245,7 +250,7 @@ func clear_countertop():
 	# Also notify pickup script that it's no longer on a countertop
 	var parent_pickup = get_parent()
 	# --- DEBUG PRINT --- 
-	print("[Ingredient] Attempting set_on_countertop_status(false) on parent (clear_countertop): ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	## //print("[Ingredient] Attempting set_on_countertop_status(false) on parent (clear_countertop): ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
 	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(false)
@@ -253,6 +258,8 @@ func clear_countertop():
 	current_countertop = null
 	on_chopping_board = false
 	stop_processing() # Stop processing if picked up
+	_player_can_interact = false # Ensure player cannot interact if picked up
+	_update_interact_label_visibility()
 	if is_instance_valid(interact_label):
 		interact_label.visible = false
 
@@ -264,18 +271,34 @@ func _update_interact_label_visibility():
 		return 
 
 	# Show interact label only if:
+	# - Player is close enough to interact <--- NEW CHECK
 	# - It can be processed
 	# - It's in the whole state
 	# - It's on a chopping board
 	# - It's NOT currently being processed
-	var should_show = can_be_processed and \
+	var should_show = _player_can_interact and \
+					  can_be_processed and \
 					  current_state == State.WHOLE and \
 					  on_chopping_board and \
 					  not _is_processing_internal
 
-	print("Should show interact label: ", should_show) # Keep debug print for now
-	
+	# Corrected GDScript print format
+	print("Ingredient (%s): Should show interact label: %s (PlayerCanInteract: %s, CanProcess: %s, State: %s, OnBoard: %s, Processing: %s)" % \
+		[name, should_show, _player_can_interact, can_be_processed, current_state, on_chopping_board, _is_processing_internal])
+
 	interact_label.visible = should_show
+
+# --- NEW Functions called by Player Script ---
+func player_can_interact():
+	print("Ingredient (%s): Player can now interact." % name) # Corrected print
+	_player_can_interact = true
+	_update_interact_label_visibility() # Update label when player enters range
+
+func player_cannot_interact():
+	print("Ingredient (%s): Player can no longer interact." % name) # Corrected print
+	_player_can_interact = false
+	stop_processing() # Stop processing if player moves away
+	_update_interact_label_visibility() # Update label when player leaves range
 
 # --- Helper Functions ---
 # Optional: Add more specific checks or virtual functions for overrides
