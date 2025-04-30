@@ -201,6 +201,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.38825, 0.231706, -2.01185)
 [node name="Onion" parent="." instance=ExtResource("6_21xkr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.83449, 0.677684, 0.284615)
 
+[node name="Onion2" parent="." instance=ExtResource("6_21xkr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.08888, 0.677684, 0.284615)
+
 [node name="Label" type="Label" parent="."]
 anchors_preset = 3
 anchor_left = 1.0

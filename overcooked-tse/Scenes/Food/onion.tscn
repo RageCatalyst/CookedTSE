@@ -5,16 +5,18 @@
 [ext_resource type="Script" uid="uid://cya31isrhpgv8" path="res://Scenes/Scripts/ingredient.gd" id="3_fq617"]
 [ext_resource type="ArrayMesh" uid="uid://bnqah73ej86e5" path="res://Meshes/chopped onion.mesh" id="4_8bh2q"]
 [ext_resource type="PackedScene" uid="uid://bpbe4daitnftg" path="res://Scenes/Food/chopped onion.tscn" id="4_xxxxx"]
-[ext_resource type="Material" uid="uid://jxchis28o6y6" path="res://Materials/outline_shader_material.tres" id="6_e258v"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_d4jta"]
 radius = 0.494871
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8bh2q"]
+albedo_color = Color(0.587191, 0.536444, 0.424744, 1)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_njak0"]
 radius = 2.06045
 
 [node name="Onion" type="RigidBody3D" groups=["onion"]]
-collision_layer = 0
+collision_layer = 2
 script = ExtResource("1_yec2b")
 item_name = "Onion"
 
@@ -37,7 +39,7 @@ shape = SubResource("SphereShape3D_d4jta")
 [node name="OnionMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.445, 6.71931e-08, 0, -6.71931e-08, -0.445, 0, 0, 0, 0.445, 0, 0, 0)
 mesh = ExtResource("2_fq617")
-surface_material_override/0 = ExtResource("6_e258v")
+surface_material_override/0 = SubResource("StandardMaterial3D_8bh2q")
 
 [node name="Area3D" type="Area3D" parent="."]
 

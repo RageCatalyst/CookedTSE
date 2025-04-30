@@ -6,6 +6,12 @@ const SPEED = 5.0
 @export var held_item_ingredient_name : String
 
 @onready var hold_position = $HoldPosition
+@onready var interaction_area: Area3D = $InteractionArea # Assign in editor or ensure name matches
+
+# List to track nearby pickup objects
+var nearby_pickups: Array[PickupObject] = []
+# Reference to the currently highlighted object
+var currently_highlighted_pickup: PickupObject = null
 
 func _enter_tree():
 	set_multiplayer_authority(name.to_int())
@@ -16,20 +22,37 @@ var preview_instance: Node3D = null
 
 var facing_direction: Vector3 = Vector3.FORWARD
 
+func _ready():
+	# Connect signals from the player's interaction area
+	if interaction_area:
+		interaction_area.body_entered.connect(_on_interaction_area_body_entered)
+		interaction_area.body_exited.connect(_on_interaction_area_body_exited)
+	else:
+		printerr("Player: InteractionArea node not found!")
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("exit"):
 		get_tree().quit()
 
 func _process(_delta: float) -> void:
+	# Handle interaction input
 	if Input.is_action_just_pressed("interact"):
 		if held_item:
-			drop_item()
+			drop_item() # Existing drop logic
+		elif currently_highlighted_pickup:
+			# Tell the highlighted item it's being picked up
+			if currently_highlighted_pickup.has_method("get_picked_up"):
+				currently_highlighted_pickup.get_picked_up(self)
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():
 		# Add the gravity.
 		if not is_on_floor():
 			velocity += get_gravity() * delta
+
+	# Update pickup highlighting
+	_update_pickup_highlight()
+
 	if held_item:
 		_handle_placement_preview()
 	else:
@@ -37,6 +60,68 @@ func _physics_process(delta: float) -> void:
 
 	_handle_movement()
 	move_and_slide()
+
+# --- Pickup Highlighting Logic ---
+
+func _on_interaction_area_body_entered(body: Node3D):
+	# Check if the body is a PickupObject and not already in the list
+	if body is PickupObject and not nearby_pickups.has(body):
+		nearby_pickups.append(body)
+
+func _on_interaction_area_body_exited(body: Node3D):
+	# Remove the body if it's a PickupObject
+	if body is PickupObject:
+		nearby_pickups.erase(body)
+		# If the exited body was the highlighted one, clear the highlight
+		if currently_highlighted_pickup == body:
+			if currently_highlighted_pickup and currently_highlighted_pickup.has_method("disable_highlight"):
+				currently_highlighted_pickup.disable_highlight()
+			currently_highlighted_pickup = null
+
+func _update_pickup_highlight():
+	var closest_pickup: PickupObject = null
+	var min_dist_sq = INF
+
+	# If holding an item, ensure nothing is highlighted
+	if held_item:
+		if currently_highlighted_pickup:
+			if currently_highlighted_pickup.has_method("disable_highlight"):
+				currently_highlighted_pickup.disable_highlight()
+			currently_highlighted_pickup = null
+		return
+
+	# Find the closest pickup object in range
+	for pickup in nearby_pickups:
+		# Ensure the pickup object is still valid (hasn't been deleted)
+		if not is_instance_valid(pickup):
+			# Schedule removal for later to avoid modifying array during iteration
+			call_deferred("remove_invalid_pickup", pickup)
+			continue
+		
+		var dist_sq = global_position.distance_squared_to(pickup.global_position)
+		if dist_sq < min_dist_sq:
+			min_dist_sq = dist_sq
+			closest_pickup = pickup
+
+	# Update highlighting based on the closest found object
+	if closest_pickup != currently_highlighted_pickup:
+		# Disable highlight on the old one (if any)
+		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup) and currently_highlighted_pickup.has_method("disable_highlight"):
+			currently_highlighted_pickup.disable_highlight()
+		
+		# Enable highlight on the new one (if any)
+		if closest_pickup and closest_pickup.has_method("enable_highlight"):
+			closest_pickup.enable_highlight()
+		
+		# Update the reference
+		currently_highlighted_pickup = closest_pickup
+
+# Helper to safely remove invalid instances from the list
+func remove_invalid_pickup(pickup: PickupObject):
+	if nearby_pickups.has(pickup):
+		nearby_pickups.erase(pickup)
+
+# --- End Pickup Highlighting Logic ---
 
 func _handle_placement_preview():
 	var countertop = get_facing_countertop()
@@ -95,10 +180,15 @@ func is_facing_target(target_node: Node3D, max_angle_degrees := 60.0) -> bool:
 	var angle = rad_to_deg(facing_direction.angle_to(to_target))
 	return angle < max_angle_degrees
 
-func pick_up_item(item_node):
+func pick_up_item(item_node: PickupObject): # Changed type hint
 	if held_item == null:
 		held_item = item_node
 		attach_item_to_hand(item_node)
+
+		# Ensure the just picked up item is no longer highlighted
+		if currently_highlighted_pickup == item_node:
+			currently_highlighted_pickup = null # Clear reference
+			# Highlight should be disabled by _update_pickup_highlight because held_item is now set
 
 		# When picking up, remove from countertop
 		var ingredient_script_node = item_node.find_child("Ingredient Script Holder", true, false)
