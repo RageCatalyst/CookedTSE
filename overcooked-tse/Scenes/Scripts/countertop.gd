@@ -53,3 +53,11 @@ func remove_item():
 
 func get_item() -> Node:
 	return item_on_countertop
+
+# Called by ingredient when placed on/removed from this countertop
+func set_on_countertop_status(status: bool):
+	# This function is needed to prevent errors when an ingredient calls it on its parent (this countertop).
+	# You can add logic here if the countertop needs to know if an ingredient is on it.
+	# For now, it just prevents the "method not found" error.
+	# print("Countertop received set_on_countertop_status: ", status)
+	pass

@@ -6,10 +6,15 @@ const SPEED = 5.0
 @export var held_item_ingredient_name : String
 
 @onready var hold_position = $HoldPosition
+@onready var interaction_area: Area3D = $InteractionArea # Assign in editor or ensure name matches
+
+# List to track nearby pickup objects
+var nearby_pickups: Array[PickupObject] = []
+# Reference to the currently highlighted object
+var currently_highlighted_pickup: PickupObject = null
 
 func _enter_tree():
-	set_multiplayer_authority(int(str(name)))
-	
+	set_multiplayer_authority(name.to_int())
 
 @onready var placement_preview = $PlacementPreview
 var preview_scene = preload("res://Scenes/Food/IngredientPreview.tscn")
@@ -17,27 +22,106 @@ var preview_instance: Node3D = null
 
 var facing_direction: Vector3 = Vector3.FORWARD
 
+func _ready():
+	# Connect signals from the player's interaction area
+	if interaction_area:
+		interaction_area.body_entered.connect(_on_interaction_area_body_entered)
+		interaction_area.body_exited.connect(_on_interaction_area_body_exited)
+	else:
+		printerr("Player: InteractionArea node not found!")
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("exit"):
 		get_tree().quit()
 
 func _process(_delta: float) -> void:
+	# Handle interaction input
 	if Input.is_action_just_pressed("interact"):
 		if held_item:
-			drop_item()
+			drop_item() # Existing drop logic
+		elif currently_highlighted_pickup:
+			# Tell the highlighted item it's being picked up
+			if currently_highlighted_pickup.has_method("get_picked_up"):
+				currently_highlighted_pickup.get_picked_up(self)
 
 func _physics_process(delta: float) -> void:
-	if !is_multiplayer_authority():
-		return
-	
-	if not is_on_floor():
-		velocity += get_gravity() * delta
-	_handle_movement()
-	move_and_slide()
+	if is_multiplayer_authority():
+		# Add the gravity.
+		if not is_on_floor():
+			velocity += get_gravity() * delta
+
+	# Update pickup highlighting
+	_update_pickup_highlight()
+
 	if held_item:
 		_handle_placement_preview()
 	else:
 		_remove_placement_preview()
+
+	_handle_movement()
+	move_and_slide()
+
+# --- Pickup Highlighting Logic ---
+
+func _on_interaction_area_body_entered(body: Node3D):
+	# Check if the body is a PickupObject and not already in the list
+	if body is PickupObject and not nearby_pickups.has(body):
+		nearby_pickups.append(body)
+
+func _on_interaction_area_body_exited(body: Node3D):
+	# Remove the body if it's a PickupObject
+	if body is PickupObject:
+		nearby_pickups.erase(body)
+		# If the exited body was the highlighted one, clear the highlight
+		if currently_highlighted_pickup == body:
+			if currently_highlighted_pickup and currently_highlighted_pickup.has_method("disable_highlight"):
+				currently_highlighted_pickup.disable_highlight()
+			currently_highlighted_pickup = null
+
+func _update_pickup_highlight():
+	var closest_pickup: PickupObject = null
+	var min_dist_sq = INF
+
+	# If holding an item, ensure nothing is highlighted
+	if held_item:
+		if currently_highlighted_pickup:
+			if currently_highlighted_pickup.has_method("disable_highlight"):
+				currently_highlighted_pickup.disable_highlight()
+			currently_highlighted_pickup = null
+		return
+
+	# Find the closest pickup object in range
+	for pickup in nearby_pickups:
+		# Ensure the pickup object is still valid (hasn't been deleted)
+		if not is_instance_valid(pickup):
+			# Schedule removal for later to avoid modifying array during iteration
+			call_deferred("remove_invalid_pickup", pickup)
+			continue
+		
+		var dist_sq = global_position.distance_squared_to(pickup.global_position)
+		if dist_sq < min_dist_sq:
+			min_dist_sq = dist_sq
+			closest_pickup = pickup
+
+	# Update highlighting based on the closest found object
+	if closest_pickup != currently_highlighted_pickup:
+		# Disable highlight on the old one (if any)
+		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup) and currently_highlighted_pickup.has_method("disable_highlight"):
+			currently_highlighted_pickup.disable_highlight()
+		
+		# Enable highlight on the new one (if any)
+		if closest_pickup and closest_pickup.has_method("enable_highlight"):
+			closest_pickup.enable_highlight()
+		
+		# Update the reference
+		currently_highlighted_pickup = closest_pickup
+
+# Helper to safely remove invalid instances from the list
+func remove_invalid_pickup(pickup: PickupObject):
+	if nearby_pickups.has(pickup):
+		nearby_pickups.erase(pickup)
+
+# --- End Pickup Highlighting Logic ---
 
 func _handle_placement_preview():
 	var countertop = get_facing_countertop()
@@ -96,13 +180,26 @@ func is_facing_target(target_node: Node3D, max_angle_degrees := 60.0) -> bool:
 	var angle = rad_to_deg(facing_direction.angle_to(to_target))
 	return angle < max_angle_degrees
 
-func pick_up_item(item_node):
+func pick_up_item(item_node: PickupObject): # Changed type hint
 	if held_item == null:
 		held_item = item_node
 		attach_item_to_hand(item_node)
-	if item_node.has_method("clear_countertop"):
-		item_node.clear_countertop()
-	print("player is holding: " + held_item.name)
+
+		# Ensure the just picked up item is no longer highlighted
+		if currently_highlighted_pickup == item_node:
+			currently_highlighted_pickup = null # Clear reference
+			# Highlight should be disabled by _update_pickup_highlight because held_item is now set
+
+		# When picking up, remove from countertop
+		var ingredient_script_node = item_node.find_child("Ingredient Script Holder", true, false)
+		if ingredient_script_node and ingredient_script_node.has_method("remove_from_countertop"):
+			ingredient_script_node.remove_from_countertop()
+		else:
+			# Fallback: Check if the script is on the root item itself
+			if item_node.has_method("remove_from_countertop"):
+				item_node.remove_from_countertop()
+
+		print("player is holding: " + held_item.name)
 
 func attach_item_to_hand(item_node):
 	item_node.reparent(hold_position)
@@ -130,21 +227,36 @@ func _snap_item_to_countertop(item, countertop):
 		item.global_transform = snap_point.global_transform
 		if item is RigidBody3D:
 			item.freeze = true
-		if item.has_method("set_countertop"):
-			item.set_countertop(countertop)
-		if item.get_child_count() > 0 and item.get_child(0).has_method("set_countertop"):
-			item.get_child(0).set_countertop(countertop)
+
+		# Find the node with the ingredient script and call set_countertop
+		var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false) # Recursive search, ignore owner
+		if ingredient_script_node and ingredient_script_node.has_method("set_countertop"):
+			ingredient_script_node.set_countertop(countertop)
+		else:
+			# Fallback: Check if the script is on the root item itself (less likely now)
+			if item.has_method("set_countertop"):
+				item.set_countertop(countertop)
+			else:
+				printerr("Could not find ingredient script with set_countertop method on ", item.name)
+
 	else:
-		print("SnapPoint not found!")
+		print("SnapPoint not found on countertop: ", countertop.name)
 
 func _drop_item_in_front(item):
-	item.reparent(get_parent())
-	item.global_transform.origin = global_transform.origin + transform.basis.z * -1.5
+	item.reparent(get_parent()) # Reparent to the main scene tree
+	item.global_transform.origin = global_transform.origin + facing_direction * 1.5 # Use facing direction
 	if item is RigidBody3D:
 		item.freeze = false
-		item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2))
-	if item.has_method("clear_countertop"):
-		item.clear_countertop()
+		# item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2)) # Optional impulse
+
+	# Find the node with the ingredient script and call remove_from_countertop
+	var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false)
+	if ingredient_script_node and ingredient_script_node.has_method("remove_from_countertop"):
+		ingredient_script_node.remove_from_countertop()
+	else:
+		# Fallback: Check if the script is on the root item itself
+		if item.has_method("remove_from_countertop"):
+			item.remove_from_countertop()
 
 # Returns the countertop directly in front of the player using a RayCast3D node named 'CountertopRaycast'
 func get_facing_countertop():
