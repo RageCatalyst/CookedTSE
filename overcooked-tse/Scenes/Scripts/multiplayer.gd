@@ -20,7 +20,7 @@ func _add_player(pid):
 	var player = PLAYER.instantiate()
 	player.name = str(pid)
 	add_child(player)
-	player.position = Vector3(0, 5, 0)
+	player.position = Vector3(0, 2, 0)
 
 
 func _on_connect_pressed():

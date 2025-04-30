@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cnniox8lkfqsr"]
+[gd_scene load_steps=11 format=3 uid="uid://cnniox8lkfqsr"]
 
 [ext_resource type="Script" uid="uid://54lbxx5mbfnf" path="res://Scenes/Scripts/pickup_object.gd" id="1_yec2b"]
 [ext_resource type="ArrayMesh" uid="uid://cumrxfnt6wdpc" path="res://Meshes/onion.mesh" id="2_fq617"]
@@ -16,6 +16,14 @@ albedo_color = Color(0.894113, 0.700948, 0.491655, 1)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_njak0"]
 radius = 2.06045
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_e258v"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
 
 [node name="Onion" type="RigidBody3D" node_paths=PackedStringArray("visual_mesh") groups=["onion"]]
 collision_layer = 2
@@ -48,6 +56,9 @@ surface_material_override/0 = SubResource("StandardMaterial3D_8bh2q")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("SphereShape3D_njak0")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_e258v")
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]
