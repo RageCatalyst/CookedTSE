@@ -99,9 +99,17 @@ func pick_up_item(item_node):
 	if held_item == null:
 		held_item = item_node
 		attach_item_to_hand(item_node)
-	if item_node.has_method("clear_countertop"):
-		item_node.clear_countertop()
-	print("player is holding: " + held_item.name)
+
+		# When picking up, remove from countertop
+		var ingredient_script_node = item_node.find_child("Ingredient Script Holder", true, false)
+		if ingredient_script_node and ingredient_script_node.has_method("remove_from_countertop"):
+			ingredient_script_node.remove_from_countertop()
+		else:
+			# Fallback: Check if the script is on the root item itself
+			if item_node.has_method("remove_from_countertop"):
+				item_node.remove_from_countertop()
+
+		print("player is holding: " + held_item.name)
 
 func attach_item_to_hand(item_node):
 	item_node.reparent(hold_position)
@@ -129,21 +137,36 @@ func _snap_item_to_countertop(item, countertop):
 		item.global_transform = snap_point.global_transform
 		if item is RigidBody3D:
 			item.freeze = true
-		if item.has_method("set_countertop"):
-			item.set_countertop(countertop)
-		if item.get_child_count() > 0 and item.get_child(0).has_method("set_countertop"):
-			item.get_child(0).set_countertop(countertop)
+
+		# Find the node with the ingredient script and call set_countertop
+		var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false) # Recursive search, ignore owner
+		if ingredient_script_node and ingredient_script_node.has_method("set_countertop"):
+			ingredient_script_node.set_countertop(countertop)
+		else:
+			# Fallback: Check if the script is on the root item itself (less likely now)
+			if item.has_method("set_countertop"):
+				item.set_countertop(countertop)
+			else:
+				printerr("Could not find ingredient script with set_countertop method on ", item.name)
+
 	else:
-		print("SnapPoint not found!")
+		print("SnapPoint not found on countertop: ", countertop.name)
 
 func _drop_item_in_front(item):
-	item.reparent(get_parent())
-	item.global_transform.origin = global_transform.origin + transform.basis.z * -1.5
+	item.reparent(get_parent()) # Reparent to the main scene tree
+	item.global_transform.origin = global_transform.origin + facing_direction * 1.5 # Use facing direction
 	if item is RigidBody3D:
 		item.freeze = false
-		item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2))
-	if item.has_method("clear_countertop"):
-		item.clear_countertop()
+		# item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2)) # Optional impulse
+
+	# Find the node with the ingredient script and call remove_from_countertop
+	var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false)
+	if ingredient_script_node and ingredient_script_node.has_method("remove_from_countertop"):
+		ingredient_script_node.remove_from_countertop()
+	else:
+		# Fallback: Check if the script is on the root item itself
+		if item.has_method("remove_from_countertop"):
+			item.remove_from_countertop()
 
 # Returns the countertop directly in front of the player using a RayCast3D node named 'CountertopRaycast'
 func get_facing_countertop():

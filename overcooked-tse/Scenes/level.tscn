@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://n14oq1723pyp"]
+[gd_scene load_steps=11 format=3 uid="uid://n14oq1723pyp"]
 
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
 [ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cnniox8lkfqsr" path="res://Scenes/Food/onion.tscn" id="6_21xkr"]
 [ext_resource type="PackedScene" uid="uid://db8uogurso5wk" path="res://Scenes/countertop.tscn" id="7_6bp64"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="7_344ge"]
+[ext_resource type="Script" uid="uid://dydt7ksyxha0e" path="res://Scenes/timer.gd" id="8_754fn"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ynf5e"]
 resource_local_to_scene = true
@@ -198,7 +199,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.81175, 0.231706, -2.01185)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.38825, 0.231706, -2.01185)
 
 [node name="Onion" parent="." instance=ExtResource("6_21xkr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.71264, 0.677684, 0.284615)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.83449, 0.677684, 0.284615)
 
-[node name="Onion2" parent="." instance=ExtResource("6_21xkr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.71264, 0.677684, 0.284615)
+[node name="Label" type="Label" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -122.0
+offset_top = -56.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "placeholder"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 150.0
+one_shot = true
+script = ExtResource("8_754fn")

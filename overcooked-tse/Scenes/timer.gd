@@ -7,7 +7,7 @@ func _ready() -> void:
 	label = $"../Label"
 	connect("timeout", Callable(self, "_on_timer_timeout"))
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var minutes = floor(time_left / 60)
 	var seconds = int(time_left) % 60
 
