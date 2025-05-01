@@ -13,7 +13,6 @@ enum State { WHOLE, PROCESSED }
 @export var processing_time: float = 2.0 # Time needed to process (e.g., chop)
 @export var can_be_processed: bool = true # Can this ingredient be processed (chopped, cooked, etc.)?
 @export var mesh_node_path: NodePath = ^"MeshInstance3D" # Export the path, default to "MeshInstance3D"
-@export var player_index: int = 0 # Assign this when instantiating the player
 
 # --- State ---
 var current_state: State = State.WHOLE
@@ -75,17 +74,6 @@ func _setup_labels():
 	print("Adding progress_label as child...")
 	add_child(progress_label)
 	print("progress_label added. Parent: ", progress_label.get_parent())
-
-
-func _input(event):
-	# Start/Stop Processing
-	# Only allow processing if it can be processed, is whole, and is on a chopping board
-	if can_be_processed and current_state == State.WHOLE and on_chopping_board:
-		if event.is_action_pressed("chop_p%d" % player_index) and not _is_processing_internal: # Using "chop" action for now
-			start_processing()
-		elif event.is_action_released("chop_p%d" % player_index) and _is_processing_internal:
-			stop_processing()
-
 
 func _process(delta):
 	# Ensure node is in the tree before accessing global_transform or updating labels

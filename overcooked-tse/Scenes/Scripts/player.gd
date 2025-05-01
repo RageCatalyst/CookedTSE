@@ -11,6 +11,8 @@ const SPEED = 5.0
 
 # List to track nearby pickup objects
 var nearby_pickups: Array[PickupObject] = []
+# List to track nearby countertop objects
+var nearby_ingredients_countertop: Array = []
 # Reference to the currently highlighted object
 var currently_highlighted_pickup: PickupObject = null
 
@@ -41,6 +43,12 @@ func _process(_delta: float) -> void:
 			# Tell the highlighted item it's being picked up
 			if currently_highlighted_pickup.has_method("get_picked_up"):
 				currently_highlighted_pickup.get_picked_up(self)
+	for ingredient in nearby_ingredients_countertop:
+		if ingredient.can_be_processed and ingredient.current_state == IngredientBase.State.WHOLE and ingredient.on_chopping_board:
+			if Input.is_action_pressed("chop_p%d" % player_index):
+				ingredient.start_processing()
+			elif Input.is_action_just_released("chop_p%d" % player_index):
+				ingredient.stop_processing()
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
@@ -64,6 +72,8 @@ func _on_interaction_area_body_entered(body: Node3D):
 	# Check if the body is a PickupObject and not already in the list
 	if body is PickupObject and not nearby_pickups.has(body):
 		nearby_pickups.append(body)
+	if body is IngredientBase and body.on_chopping_board:
+		nearby_ingredients_countertop.append(body)
 
 func _on_interaction_area_body_exited(body: Node3D):
 	# Remove the body if it's a PickupObject
@@ -74,6 +84,8 @@ func _on_interaction_area_body_exited(body: Node3D):
 			if currently_highlighted_pickup and currently_highlighted_pickup.has_method("disable_highlight"):
 				currently_highlighted_pickup.disable_highlight()
 			currently_highlighted_pickup = null
+	if body is IngredientBase:
+		nearby_ingredients_countertop.erase(body)
 
 func _update_pickup_highlight():
 	var closest_pickup: PickupObject = null
