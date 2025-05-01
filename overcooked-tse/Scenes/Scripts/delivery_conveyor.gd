@@ -2,7 +2,19 @@ extends Node3D
 
 # List of currently required orders (group names)
 # Example: Start with one of each soup needed
-@export var orders: Array[String] = ["onion soup", "tomato soup", "mushroom soup"]
+
+@export var orders_manager: HBoxContainer = null # Reference to the OrdersManager node
+@export var orders: Array[String]
+
+func ready():
+	orders_manager = get_node_or_null("/root/Multiplayer/Level/CanvasLayer/UIRoot/HBoxContainer") # Adjust path as needed
+	
+func _process(_delta: float) -> void:
+	# Update the UI with current orders
+	if orders_manager:
+		orders_manager.clear() # Clear previous orders
+		for order in orders:
+			orders = orders_manager.orders
 
 # This function should be called by the player when they interact
 func interact(player):
@@ -27,7 +39,7 @@ func interact(player):
 			if player.has_method("drop_item"):
 				# We need to ensure the item is actually destroyed *after* this interaction
 				# A simple way is to have drop_item handle the queue_free()
-				player.drop_item(true) # Pass a flag to indicate successful delivery/destruction
+				player.drop_item() # Pass a flag to indicate successful delivery/destruction
 			else:
 				print("Warning: Player script missing drop_item(bool) method. Destroying item directly.")
 				held_item.queue_free()

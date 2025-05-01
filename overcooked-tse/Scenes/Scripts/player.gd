@@ -101,14 +101,17 @@ func _process(_delta: float) -> void:
 				else:
 					printerr("Countertop does not have a valid ingredient bin node with an interact method.")
 			
-			# NEW: Check if it's a delivery conveyor and player is holding a soup
-			elif held_item != null and currently_facing_countertop.has_method("interact") and "orders" in currently_facing_countertop: # Check for conveyor specific method and property
-				if held_item.has_method("get_soup_type"):
-					print("Interact pressed, holding soup. Interacting with delivery conveyor.")
-					currently_facing_countertop.interact(self) # Call the conveyor's interact method
-					interaction_handled_this_frame = true # Mark interaction as handled
+				# Check if it's a delivery conveyor and player is holding an item
+				# The conveyor's interact method will handle checking the item's group
+			elif currently_facing_countertop.status == Countertop.Status.DELIVERY_CONVEYOR and held_item != null: 
+				print("Interact pressed, holding item. Interacting with delivery conveyor.")
+				print(currently_facing_countertop.name)
+				if(currently_facing_countertop.get_node("delivery_conveyor")):
+					currently_facing_countertop.get_node("delivery_conveyor").interact(self) # Call the conveyor's interact method
 				else:
-					print("Player is holding an item, but it's not a soup.")
+					printerr("PLAYERGD: Delivery conveyor node not found.")
+				#currently_facing_countertop.get_node("delivery_conveyor").interact(self) # Call the conveyor's interact method
+				interaction_handled_this_frame = true # Mark interaction as handled
 
 		# Priority 2: Drop item if holding one AND interaction wasn't handled above
 		if held_item and not interaction_handled_this_frame:

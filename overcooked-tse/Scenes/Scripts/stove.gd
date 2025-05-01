@@ -21,6 +21,8 @@ var matched_recipe_output: String = "" # Name of the meal being cooked
 # --- Node References ---
 # @onready var progress_bar: ProgressBar = $ProgressBar # Example: Add a ProgressBar node
 # @onready var visual_indicator: Node3D = $VisualIndicator # Example: Fire/steam effect
+# Add a reference to the Label3D node you will add in the scene
+@onready var progress_label: Label3D = $ProgressLabel
 
 # --- Recipes ---
 # Key: Output meal name (String)
@@ -39,14 +41,16 @@ func _ready():
 	# Initialize visuals/progress bar if used
 	# if progress_bar: progress_bar.visible = false
 	# if visual_indicator: visual_indicator.visible = false
-	pass
+	progress_label.visible = false # Start hidden
 
 func _process(delta: float):
 	match current_state:
 		State.COOKING:
 			cooking_timer += delta
-			# Update progress bar if used
-			# if progress_bar: progress_bar.value = (cooking_timer / cooking_duration) * 100
+			# Update progress label if it exists
+			if progress_label:
+				var percentage = clamp(int((cooking_timer / cooking_duration) * 100.0), 0, 100)
+				progress_label.text = str(percentage) + "%"
 
 			if cooking_timer >= cooking_duration:
 				_finish_cooking()
@@ -58,11 +62,13 @@ func _process(delta: float):
 				_burn_food()
 
 		State.IDLE:
-			# Can potentially check if ingredients match a recipe automatically
-			pass
+			 # Hide label if idle
+			if progress_label and progress_label.visible:
+				progress_label.visible = false
 		State.BURNT:
-			# Food is burnt, maybe show smoke
-			pass
+			# Hide label if burnt
+			if progress_label and progress_label.visible:
+				progress_label.visible = false
 
 
 # --- Public Methods (Called by Player/Countertop/Item) ---
@@ -212,26 +218,28 @@ func _start_cooking():
 	current_state = State.COOKING
 	cooking_timer = 0.0
 	# Ingredients are already consumed/deleted, no need to clear nodes here.
-	# Show progress bar/cooking visuals
-	# if progress_bar: progress_bar.visible = true
-	# if visual_indicator: visual_indicator.visible = true # e.g., turn on fire
+	# Show progress label
+	print("Stove: Cooking progress label visible")
+	if progress_label:
+		progress_label.text = "0%"
+		progress_label.visible = true
 
 
 func _finish_cooking():
 	print("Stove: Finished cooking ", matched_recipe_output)
 	current_state = State.COOKING_COMPLETE
+	# Hide progress label
+	if progress_label: progress_label.visible = false
 	_deliver_meal()
 	cooking_timer = 0.0 # Reset timer for burn duration
-	# Update visuals (e.g., hide progress, show "ready" indicator)
-	# if progress_bar: progress_bar.visible = false
 
 
 func _burn_food():
 	print("Stove: ", matched_recipe_output, " has burnt!")
 	current_state = State.BURNT
+	# Hide progress label
+	if progress_label: progress_label.visible = false
 	# Update visuals (e.g., show smoke, burnt food model)
-	# if visual_indicator: visual_indicator.visible = false # Hide fire
-	# Need a burnt food visual/representation
 
 
 func _deliver_meal():
@@ -309,6 +317,8 @@ func _deliver_meal():
 
 func _clear_burnt_food():
 	print("Stove: Clearing burnt food.")
+	# Hide progress label
+	if progress_label: progress_label.visible = false
 	# TODO: Implement clearing burnt food (maybe requires interaction with bin?)
 	_clear_ingredients() # Clears counts
 	current_state = State.IDLE
@@ -318,6 +328,8 @@ func _clear_burnt_food():
 
 func _clear_ingredients():
 	print("Stove: Clearing ingredient counts.")
+	# Hide progress label if it's somehow still visible
+	if progress_label: progress_label.visible = false
 	# No nodes to free, just clear the counts dictionary
 	current_ingredient_counts.clear()
 	matched_recipe_output = "" # Ensure matched recipe is cleared too

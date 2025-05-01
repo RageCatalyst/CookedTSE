@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
 [ext_resource type="Script" uid="uid://cltira21wj7wr" path="res://Scenes/Scripts/stove.gd" id="5_vimie"]
 [ext_resource type="PackedScene" uid="uid://c0rlb2qmms42a" path="res://Scenes/Food/onion soup.tscn" id="6_fnohm"]
+[ext_resource type="Script" uid="uid://de57b3wp0vysl" path="res://Scenes/Scripts/delivery_conveyor.gd" id="7_dg1n2"]
 [ext_resource type="PackedScene" uid="uid://du22x0mclk4ae" path="res://Models/Homemade/delivery_conveyer.glb" id="7_fnohm"]
 [ext_resource type="Script" uid="uid://mt8whwmecxh" path="res://Scenes/Scripts/ingredient_bin.gd" id="9_dg1n2"]
 [ext_resource type="PackedScene" uid="uid://dl5fni8idvewg" path="res://Models/Homemade/chopping board.glb" id="10_bycu8"]
@@ -12,10 +13,6 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wxj5o"]
 size = Vector3(1.99641, 2.12494, 2.00485)
-
-[sub_resource type="GDScript" id="GDScript_fnohm"]
-script/source = "extends Node3D
-"
 
 [node name="countertop" type="Node3D" groups=["countertops"]]
 script = ExtResource("1_eqru6")
@@ -47,9 +44,15 @@ onion_soup_scene = ExtResource("6_fnohm")
 [node name="stovetop node" parent="stove" instance=ExtResource("10_dg1n2")]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 1.41, 0)
 
+[node name="ProgressLabel" type="Label3D" parent="stove"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.16128, 0)
+pixel_size = 0.01
+billboard = 1
+
 [node name="delivery_conveyor" type="Node3D" parent="." groups=["delivery_conveyors"]]
 visible = false
-script = SubResource("GDScript_fnohm")
+script = ExtResource("7_dg1n2")
+orders = Array[String](["onion soup"])
 
 [node name="delivery_conveyer_kmodel" parent="delivery_conveyor" instance=ExtResource("7_fnohm")]
 transform = Transform3D(0.605, 0, 0, 0, 0.605, 0, 0, 0, 0.605, 0, 1.39885, 0)
