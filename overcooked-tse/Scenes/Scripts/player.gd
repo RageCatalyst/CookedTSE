@@ -100,10 +100,15 @@ func _process(_delta: float) -> void:
 					interaction_handled_this_frame = true # Mark interaction as handled
 				else:
 					printerr("Countertop does not have a valid ingredient bin node with an interact method.")
-			# Add other countertop interactions here (e.g., chopping board, stove) if needed
-			# elif currently_facing_countertop.status == ... and held_item != null:
-			#    # Example: Place item on chopping board
-			#    interaction_handled_this_frame = true
+			
+			# NEW: Check if it's a delivery conveyor and player is holding a soup
+			elif held_item != null and currently_facing_countertop.has_method("interact") and "orders" in currently_facing_countertop: # Check for conveyor specific method and property
+				if held_item.has_method("get_soup_type"):
+					print("Interact pressed, holding soup. Interacting with delivery conveyor.")
+					currently_facing_countertop.interact(self) # Call the conveyor's interact method
+					interaction_handled_this_frame = true # Mark interaction as handled
+				else:
+					print("Player is holding an item, but it's not a soup.")
 
 		# Priority 2: Drop item if holding one AND interaction wasn't handled above
 		if held_item and not interaction_handled_this_frame:
@@ -361,8 +366,8 @@ func drop_item():
 	if not held_item:
 		return
 	var dropped_item = held_item
-	held_item = null
-	print("player dropped: " + dropped_item.name)
+	# held_item = null # IMPORTANT: Don't nullify held_item here yet! The interact function might need it. Nullify AFTER successful interaction or drop.
+	print("Attempting to drop/place: " + dropped_item.name)
 
 	var countertop = get_facing_countertop()
 
@@ -374,17 +379,24 @@ func drop_item():
 			# Is the stove idle?
 			if stove and stove.current_state == Stove.State.IDLE:
 				print("Player adding ingredient to stove via countertop: ", dropped_item.name)
-				stove.add_ingredient(dropped_item) # Stove handles deleting the node
+				# Stove handles deleting the node, so we can nullify player's held item
+				held_item = null 
+				stove.add_ingredient(dropped_item) 
 				return # SUCCESS: Item added to stove
 			# else: Stove is busy or invalid, fall through to drop in front
 
-		# Case 2: Is it a non-stove, non-bin countertop and empty?
-		elif countertop.status != Countertop.Status.STOVE and countertop.status != Countertop.Status.INGREDIENT_BIN and countertop.get_item() == null:
+		# Case 2: Is it a non-stove, non-bin, non-conveyor countertop and empty?
+		# Check it's not a conveyor by checking for the 'orders' property
+		elif countertop.status != Countertop.Status.STOVE and countertop.status != Countertop.Status.INGREDIENT_BIN and not ("orders" in countertop) and countertop.get_item() == null:
+			# Successfully placing item, nullify player's held item
+			held_item = null 
 			_snap_item_to_countertop(dropped_item, countertop)
 			return # SUCCESS: Item snapped to regular countertop
-		# else: Countertop is stove, bin, or occupied, fall through to drop in front
+		# else: Countertop is stove, bin, conveyor, or occupied, fall through to drop in front
 
-	# Fallback: No valid countertop target, or target was occupied/busy/bin
+	# Fallback: No valid countertop target, or target was occupied/busy/bin/conveyor
+	# Nullify player's held item before dropping on ground
+	held_item = null 
 	_drop_item_in_front(dropped_item)
 
 func _snap_item_to_countertop(item, countertop):

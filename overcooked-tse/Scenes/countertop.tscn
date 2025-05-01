@@ -1,42 +1,21 @@
-[gd_scene load_steps=16 format=3 uid="uid://db8uogurso5wk"]
+[gd_scene load_steps=12 format=3 uid="uid://db8uogurso5wk"]
 
 [ext_resource type="Script" uid="uid://bmjajaiytj46y" path="res://Scenes/Scripts/countertop.gd" id="1_eqru6"]
 [ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
-[ext_resource type="PackedScene" uid="uid://dxw7cledbpiia" path="res://addons/proto-csgs/proto_csg_box_3d.tscn" id="3_6qt3v"]
-[ext_resource type="Texture2D" uid="uid://c0x0tvmbhaqck" path="res://addons/proto-csgs/textures/orange/texture_13.png" id="4_6qt3v"]
-[ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="4_pe3oq"]
 [ext_resource type="Script" uid="uid://cltira21wj7wr" path="res://Scenes/Scripts/stove.gd" id="5_vimie"]
 [ext_resource type="PackedScene" uid="uid://c0rlb2qmms42a" path="res://Scenes/Food/onion soup.tscn" id="6_fnohm"]
-[ext_resource type="Texture2D" uid="uid://bn66p4ar3fje4" path="res://addons/proto-csgs/textures/red/texture_13.png" id="6_rvg4k"]
-[ext_resource type="Texture2D" uid="uid://cmuv3ve5x2al8" path="res://addons/proto-csgs/textures/light/texture_13.png" id="7_b2fvh"]
+[ext_resource type="PackedScene" uid="uid://du22x0mclk4ae" path="res://Models/Homemade/delivery_conveyer.glb" id="7_fnohm"]
 [ext_resource type="Script" uid="uid://mt8whwmecxh" path="res://Scenes/Scripts/ingredient_bin.gd" id="9_dg1n2"]
+[ext_resource type="PackedScene" uid="uid://dl5fni8idvewg" path="res://Models/Homemade/chopping board.glb" id="10_bycu8"]
+[ext_resource type="PackedScene" uid="uid://f4js22abfpyc" path="res://Models/Homemade/stove.glb" id="10_dg1n2"]
+[ext_resource type="PackedScene" uid="uid://ch3rr02udfq4f" path="res://Models/Homemade/ingredient bin.glb" id="10_e7yjs"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wxj5o"]
 size = Vector3(1.99641, 2.12494, 2.00485)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pe3oq"]
-resource_local_to_scene = true
-albedo_texture = ExtResource("4_6qt3v")
-uv1_offset = Vector3(0.5, 0.5, 0.5)
-uv1_triplanar = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b2fvh"]
-resource_local_to_scene = true
-albedo_texture = ExtResource("4_pe3oq")
-uv1_offset = Vector3(0.5, 0.5, 0.5)
-uv1_triplanar = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vimie"]
-resource_local_to_scene = true
-albedo_texture = ExtResource("6_rvg4k")
-uv1_offset = Vector3(0.5, 0.5, 0.5)
-uv1_triplanar = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fnohm"]
-resource_local_to_scene = true
-albedo_texture = ExtResource("7_b2fvh")
-uv1_offset = Vector3(0.5, 0.5, 0.5)
-uv1_triplanar = true
+[sub_resource type="GDScript" id="GDScript_fnohm"]
+script/source = "extends Node3D
+"
 
 [node name="countertop" type="Node3D" groups=["countertops"]]
 script = ExtResource("1_eqru6")
@@ -53,40 +32,31 @@ shape = SubResource("BoxShape3D_wxj5o")
 [node name="SnapPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65052, 0)
 
-[node name="chopping_board" type="Node3D" parent="." groups=["chopping_boards"]]
+[node name="chopping board" parent="." groups=["chopping_boards"] instance=ExtResource("10_bycu8")]
+transform = Transform3D(0.57, 0, 0, 0, 0.57, 0, 0, 0, 0.57, 0, 1.429, 0)
 visible = false
 
-[node name="ProtoCSGBox3D" parent="chopping_board" instance=ExtResource("3_6qt3v")]
-transform = Transform3D(1.175, 0, 0, 0, 1.175, 0, 0, 0, 1.175, 0, 1.39366, 0)
-size = Vector3(1, 0.0518008, 1)
-material = SubResource("StandardMaterial3D_pe3oq")
-block_color = 3
+[node name="chopping_board_model" type="Node3D" parent="chopping board" groups=["chopping_boards"]]
+transform = Transform3D(1.75439, 0, 0, 0, 1.75439, 0, 0, 0, 1.75439, 0, -2.50702, 0)
 
 [node name="stove" type="Node3D" parent="." groups=["stoves"]]
 visible = false
 script = ExtResource("5_vimie")
 onion_soup_scene = ExtResource("6_fnohm")
 
-[node name="ProtoCSGBox3D" parent="stove" instance=ExtResource("3_6qt3v")]
-transform = Transform3D(1.175, 0, 0, 0, 1.175, 0, 0, 0, 1.175, 0, 1.39366, 0)
-size = Vector3(1, 0.0518008, 1)
-material = SubResource("StandardMaterial3D_b2fvh")
+[node name="stovetop node" parent="stove" instance=ExtResource("10_dg1n2")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 1.41, 0)
 
 [node name="delivery_conveyor" type="Node3D" parent="." groups=["delivery_conveyors"]]
 visible = false
+script = SubResource("GDScript_fnohm")
 
-[node name="ProtoCSGBox3D" parent="delivery_conveyor" instance=ExtResource("3_6qt3v")]
-transform = Transform3D(1.175, 0, 0, 0, 1.175, 0, 0, 0, 1.175, 0, 1.39366, 0)
-size = Vector3(1, 0.0518008, 1)
-material = SubResource("StandardMaterial3D_vimie")
-block_color = 5
+[node name="delivery_conveyer_kmodel" parent="delivery_conveyor" instance=ExtResource("7_fnohm")]
+transform = Transform3D(0.605, 0, 0, 0, 0.605, 0, 0, 0, 0.605, 0, 1.39885, 0)
 
 [node name="ingredient_bin" type="Node3D" parent="." groups=["ingredient_bins"]]
 visible = false
 script = ExtResource("9_dg1n2")
 
-[node name="ProtoCSGBox3D" parent="ingredient_bin" instance=ExtResource("3_6qt3v")]
-transform = Transform3D(1.175, 0, 0, 0, 1.175, 0, 0, 0, 1.175, 0, 1.39366, 0)
-size = Vector3(1, 0.0518008, 1)
-material = SubResource("StandardMaterial3D_fnohm")
-block_color = 2
+[node name="ingredient bin model node" parent="ingredient_bin" instance=ExtResource("10_e7yjs")]
+transform = Transform3D(-0.53, 0, 4.63341e-08, 0, 0.53, 0, -4.63341e-08, 0, -0.53, 0, 1.42946, 0)

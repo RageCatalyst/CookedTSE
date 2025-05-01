@@ -45,6 +45,18 @@ func interact(player):
 	# Assuming the player script has a 'pickup_item' function
 	if player.has_method("pick_up_item"):
 		player.pick_up_item(ingredient_instance)
+
+		# --- Start Timer ---
+		# Find the timer node (assuming it's named "Timer" in the main scene)
+		# Adjust the path if necessary, e.g., get_node("/root/MainScene/Timer")
+		var timer_node = get_tree().get_root().find_child("Timer", true, false) 
+		if timer_node and timer_node.has_method("_start_timer"):
+			timer_node._start_timer()
+			print("Ingredient taken, timer started.")
+		else:
+			printerr("Ingredient Bin: Could not find Timer node named 'Timer' or it lacks _start_timer method.")
+		# --- End Start Timer ---
+
 	else:
 		printerr("Player script does not have a 'pick_up_item' method!")
 		# Clean up if pickup fails
