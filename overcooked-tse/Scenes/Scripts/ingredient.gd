@@ -34,6 +34,7 @@ var on_chopping_board: bool = false # Renamed from on_required_tool
 
 
 func _ready():
+	set_process(true)
 	current_state = initial_state
 	_setup_labels()
 	update_visuals()
