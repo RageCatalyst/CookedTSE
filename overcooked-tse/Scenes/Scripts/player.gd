@@ -1,6 +1,9 @@
 extends CharacterBody3D
 
 const SPEED = 5.0
+const BOOST_MULTIPLIER = 2.0 # How much faster the boost makes the player
+const BOOST_DURATION = 0.2   # How long the boost lasts in seconds
+const BOOST_COOLDOWN = 0.5   # How long before boost can be used again
 
 @export var held_item : Node3D = null
 @export var held_item_ingredient_name : String
@@ -14,6 +17,11 @@ const SPEED = 5.0
 var nearby_pickups: Array[PickupObject] = []
 # Reference to the currently highlighted object
 var currently_highlighted_pickup: PickupObject = null
+
+# Boost state variables
+var is_boosting: bool = false
+var boost_timer: float = 0.0
+var boost_cooldown_timer: float = 0.0
 
 func _enter_tree():
 	set_multiplayer_authority(name.to_int())
@@ -112,6 +120,22 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# --- Handle Boost Timers ---
+	if boost_cooldown_timer > 0:
+		boost_cooldown_timer -= delta
+	if boost_timer > 0:
+		boost_timer -= delta
+		if boost_timer <= 0:
+			is_boosting = false # End boost when timer runs out
+
+	# --- Handle Boost Input ---
+	# Check if boost can be activated (not already boosting, cooldown finished, moving)
+	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	if Input.is_action_just_pressed("boost") and not is_boosting and boost_cooldown_timer <= 0 and input_dir.length_squared() > 0.1:
+		is_boosting = true
+		boost_timer = BOOST_DURATION
+		boost_cooldown_timer = BOOST_COOLDOWN
+
 	if is_multiplayer_authority():
 		# Add the gravity.
 		if not is_on_floor():
@@ -277,16 +301,22 @@ func _handle_movement() -> void:
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction := Vector3(input_dir.x, 0, input_dir.y).normalized()
 
+	# Determine current speed based on boost state
+	var current_speed = SPEED
+	if is_boosting:
+		current_speed = SPEED * BOOST_MULTIPLIER
+
 	if direction.length() > 0.1:
 		facing_direction = direction
 		look_at(global_transform.origin + facing_direction, Vector3.UP)
 
 	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+		velocity.x = direction.x * current_speed # Use current_speed
+		velocity.z = direction.z * current_speed # Use current_speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
+		# Still apply boost if moving due to inertia even if input stops
+		velocity.x = move_toward(velocity.x, 0, current_speed) # Use current_speed
+		velocity.z = move_toward(velocity.z, 0, current_speed) # Use current_speed
 
 func is_facing_target(target_node: Node3D, max_angle_degrees := 60.0) -> bool:
 	var to_target = (target_node.global_transform.origin - global_transform.origin).normalized()
