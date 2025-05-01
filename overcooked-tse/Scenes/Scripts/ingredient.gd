@@ -13,6 +13,7 @@ enum State { WHOLE, PROCESSED }
 @export var processing_time: float = 2.0 # Time needed to process (e.g., chop)
 @export var can_be_processed: bool = true # Can this ingredient be processed (chopped, cooked, etc.)?
 @export var mesh_node_path: NodePath = ^"MeshInstance3D" # Export the path, default to "MeshInstance3D"
+@export var player_index: int = 0 # Assign this when instantiating the player
 
 # --- State ---
 var current_state: State = State.WHOLE
@@ -51,7 +52,7 @@ func _setup_labels():
 		printerr("Failed to create interact_label instance!")
 		return # Stop if creation failed
 
-	interact_label.text = "Hold 'F' to Process" # Generic text, can be overridden
+	interact_label.text = "Hold 'F'/'Y' to Process" # Generic text, can be overridden
 	interact_label.visible = false
 	interact_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	# Position slightly above the ingredient - will be set in _process
@@ -80,9 +81,9 @@ func _input(event):
 	# Start/Stop Processing
 	# Only allow processing if it can be processed, is whole, and is on a chopping board
 	if can_be_processed and current_state == State.WHOLE and on_chopping_board:
-		if event.is_action_pressed("chop") and not _is_processing_internal: # Using "chop" action for now
+		if event.is_action_pressed("chop_p%d" % player_index) and not _is_processing_internal: # Using "chop" action for now
 			start_processing()
-		elif event.is_action_released("chop") and _is_processing_internal:
+		elif event.is_action_released("chop_p%d" % player_index) and _is_processing_internal:
 			stop_processing()
 
 

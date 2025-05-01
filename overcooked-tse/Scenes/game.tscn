@@ -1,12 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://puim1oqq8yoh"]
+[gd_scene load_steps=3 format=3 uid="uid://puim1oqq8yoh"]
 
-[ext_resource type="Script" uid="uid://c8wsr01o0xo8o" path="res://Scenes/multiplayer.gd" id="1_l7dgi"]
-[ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="2_eumxw"]
+[ext_resource type="Script" uid="uid://c8wsr01o0xo8o" path="res://Scenes/Scripts/multiplayer.gd" id="1_l7dgi"]
 [ext_resource type="PackedScene" uid="uid://n14oq1723pyp" path="res://Scenes/level.tscn" id="3_eumxw"]
 
 [node name="Multiplayer" type="Node"]
 script = ExtResource("1_l7dgi")
-player_scene = ExtResource("2_eumxw")
 
 [node name="Level" parent="." instance=ExtResource("3_eumxw")]
 
@@ -32,23 +30,14 @@ offset_bottom = 40.0
 [node name="Options" type="HBoxContainer" parent="UI/Net"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="UI/Net/Options"]
+[node name="Add Player" type="Button" parent="UI/Net/Options"]
 layout_mode = 2
-text = "Direct:"
+text = "Add Player
+"
 
-[node name="Host" type="Button" parent="UI/Net/Options"]
+[node name="Remove Player" type="Button" parent="UI/Net/Options"]
 layout_mode = 2
-text = "Host"
+text = "Remove Player"
 
-[node name="Connect" type="Button" parent="UI/Net/Options"]
-layout_mode = 2
-text = "Connect"
-
-[node name="Remote" type="LineEdit" parent="UI/Net/Options"]
-layout_mode = 2
-text = "0.0.0.0:135"
-placeholder_text = "IP Address"
-expand_to_text_length = true
-
-[connection signal="pressed" from="UI/Net/Options/Host" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="UI/Net/Options/Connect" to="." method="_on_connect_pressed"]
+[connection signal="pressed" from="UI/Net/Options/Add Player" to="." method="_on_add_player_pressed"]
+[connection signal="pressed" from="UI/Net/Options/Remove Player" to="." method="_on_remove_player"]
