@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://bpbe4daitnftg"]
+[gd_scene load_steps=8 format=3 uid="uid://bpbe4daitnftg"]
 
 [ext_resource type="Script" uid="uid://54lbxx5mbfnf" path="res://Scenes/Scripts/pickup_object.gd" id="1_a1xa2"]
 [ext_resource type="Script" uid="uid://cya31isrhpgv8" path="res://Scenes/Scripts/ingredient.gd" id="2_gw3wh"]
 [ext_resource type="ArrayMesh" uid="uid://cumrxfnt6wdpc" path="res://Meshes/onion.mesh" id="3_c8cym"]
 [ext_resource type="ArrayMesh" uid="uid://bnqah73ej86e5" path="res://Meshes/chopped onion.mesh" id="4_augrd"]
+[ext_resource type="Material" uid="uid://b5m8x8o4jka2" path="res://Materials/onion_mat.tres" id="5_gw3wh"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_d4jta"]
 radius = 0.494871
@@ -11,19 +12,19 @@ radius = 0.494871
 [sub_resource type="SphereShape3D" id="SphereShape3D_njak0"]
 radius = 2.06045
 
-[node name="Chopped Onion" type="RigidBody3D" groups=["chopped onion"]]
-collision_layer = 0
+[node name="Chopped Onion" type="RigidBody3D" node_paths=PackedStringArray("visual_mesh") groups=["chopped onion"]]
+collision_layer = 2
 script = ExtResource("1_a1xa2")
 item_name = "Onion"
+visual_mesh = NodePath("ChoppedOnionMesh")
 
 [node name="Ingredient Script Holder" type="Node3D" parent="."]
 script = ExtResource("2_gw3wh")
 initial_state = 1
 whole_mesh = ExtResource("3_c8cym")
 processed_mesh = ExtResource("4_augrd")
-processed_scene = null
 can_be_processed = false
-mesh_node_path = NodePath("../OnionMesh")
+mesh_node_path = NodePath("../ChoppedOnionMesh")
 
 [node name="Pickup Label" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -34,10 +35,11 @@ text = "Press \"E\" to Pick Up."
 [node name="Sphere Collider" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_d4jta")
 
-[node name="OnionMesh" type="MeshInstance3D" parent="."]
+[node name="ChoppedOnionMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.385, -3.36578e-08, 0, -3.36578e-08, 0.385, 3.36578e-08, -2.94246e-15, 3.36578e-08, -0.385, 0.00259912, -0.163905, -0.000743389)
 mesh = ExtResource("4_augrd")
 skeleton = NodePath("")
+surface_material_override/0 = ExtResource("5_gw3wh")
 
 [node name="Area3D" type="Area3D" parent="."]
 

@@ -18,6 +18,7 @@ enum State { WHOLE, PROCESSED }
 var current_state: State = State.WHOLE
 var _is_processing_internal: bool = false
 var processing_timer: float = 0.0
+var _player_can_interact: bool = false # NEW: Flag set by Player script
 
 # --- Node References ---
 # Assume this script is attached to a Node3D within the ingredient's main scene (e.g., RigidBody3D)
@@ -62,7 +63,7 @@ func _setup_labels():
 	# Setup Progress Label (Initially hidden)
 	print("Creating progress_label...")
 	progress_label = Label3D.new()
-	print("progress_label instance: ", progress_label)
+	#print("progress_label instance: ", progress_label)
 	if not is_instance_valid(progress_label):
 		printerr("Failed to create progress_label instance!")
 		return
@@ -71,9 +72,9 @@ func _setup_labels():
 	progress_label.visible = false
 	progress_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	# Position higher than interact label - will be set in _process
-	print("Adding progress_label as child...")
+	#print("Adding progress_label as child...")
 	add_child(progress_label)
-	print("progress_label added. Parent: ", progress_label.get_parent())
+	#print("progress_label added. Parent: ", progress_label.get_parent())
 
 func _process(delta):
 	# Ensure node is in the tree before accessing global_transform or updating labels
@@ -135,33 +136,23 @@ func spawn_processed_item():
 		var processed_instance = processed_scene.instantiate()
 		var original_parent = get_parent() # Get the RigidBody or main node
 
-		# Place the new item at the same location
+		# Place the new item initially at the same location
 		processed_instance.global_transform = original_parent.global_transform
 
 		# Add to the scene tree BEFORE trying to reparent or set countertop
 		get_tree().current_scene.add_child(processed_instance)
 
-		# If the original was on a countertop, try to place the new one there
-		if current_countertop and processed_instance.has_method("set_countertop"):
+		# If the original was on a countertop, tell the new one to place itself there
+		if current_countertop:
 			# We need the script instance on the new node to call set_countertop
-			# Assuming the script is attached similarly (e.g., on a child node)
-			var script_holder = processed_instance.get_node_or_null("Ingredient Script Holder") # Adjust if structure differs
+			var script_holder = processed_instance.find_child("Ingredient Script Holder", true, false) # Use find_child
 			if script_holder and script_holder.has_method("set_countertop"):
 				script_holder.set_countertop(current_countertop)
-			elif processed_instance.has_method("set_countertop"): # Fallback if script is on root
-				processed_instance.set_countertop(current_countertop)
+			# Removed fallback logic - set_countertop should handle placement now
 
-		# If set_countertop didn't handle reparenting, and it should be on the countertop, reparent manually
-		# Note: This logic might need adjustment based on how set_countertop works
-		if current_countertop and processed_instance.get_parent() != current_countertop:
-			if current_countertop.has_method("place_item"): # Prefer countertop's method
-				# Need to ensure we pass the correct node (e.g., the RigidBody)
-				current_countertop.place_item(processed_instance)
-			else: # Simple reparent fallback
-				processed_instance.reparent(current_countertop)
-
-
-		original_parent.queue_free() # Remove the original ingredient (RigidBody and its children)
+		# Remove the original ingredient (RigidBody and its children)
+		# Do this AFTER potentially calling set_countertop on the new instance
+		original_parent.queue_free()
 	else:
 		# If no processed scene, just update mesh (already done in finish_processing -> update_visuals)
 		print("Ingredient processed, mesh updated.")
@@ -192,20 +183,45 @@ func set_countertop(countertop_node):
 	current_countertop = countertop_node
 	on_chopping_board = false # Reset first
 
-	if can_be_processed and is_instance_valid(current_countertop):
-		# Check if the countertop has a chopping board
+	var item_node = get_parent() # Get the RigidBody node this script is attached to
+
+	if not is_instance_valid(item_node):
+		printerr("Ingredient: Cannot set countertop, parent node is invalid!")
+		return
+
+	if not is_instance_valid(current_countertop):
+		printerr("Ingredient: Cannot set countertop, countertop_node is invalid!")
+		return
+
+	# Find the snap point on the countertop
+	var snap_point = current_countertop.get_node_or_null("SnapPoint")
+	if snap_point:
+		# Tell the countertop it holds this item *before* reparenting
+		if current_countertop.has_method("place_item"):
+			current_countertop.place_item(item_node)
+		else:
+			printerr("Ingredient: Countertop is missing place_item method!")
+
+		# Reparent and position the item_node (RigidBody)
+		item_node.reparent(current_countertop)
+		item_node.global_transform = snap_point.global_transform
+
+		# Freeze physics if it's a RigidBody
+		if item_node is RigidBody3D:
+			item_node.freeze = true
+	else:
+		printerr("Ingredient: Countertop missing SnapPoint node:", current_countertop.name)
+		# Fallback? Maybe just leave it where it was added to the scene?
+
+	# Check if it's a chopping board (after potential reparenting)
+	if can_be_processed:
 		if current_countertop.has_method("has_chopping_board") and current_countertop.has_chopping_board():
 			on_chopping_board = true
 
-	# Notify the parent pickup script
-	var parent_pickup = get_parent()
-	# --- DEBUG PRINT --- 
-	print("[Ingredient] Attempting set_on_countertop_status(true) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
-	# --- END DEBUG --- 
-	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
-		parent_pickup.set_on_countertop_status(true)
-	else:
-		printerr("Ingredient parent does not have set_on_countertop_status method!")
+	# Notify the parent pickup script (which should still be the RigidBody, item_node)
+	if item_node and item_node.has_method("set_on_countertop_status"):
+		item_node.set_on_countertop_status(true)
+	# else: # Don't error if the method isn't there, maybe it's not needed on pickup_object?
 
 	_update_interact_label_visibility() # Update interact label visibility
 
@@ -214,7 +230,7 @@ func remove_from_countertop():
 	# Notify the parent pickup script first
 	var parent_pickup = get_parent()
 	# --- DEBUG PRINT --- 
-	print("[Ingredient] Attempting set_on_countertop_status(false) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	## print("[Ingredient] Attempting set_on_countertop_status(false) on parent: ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
 	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(false)
@@ -234,7 +250,7 @@ func clear_countertop():
 	# Also notify pickup script that it's no longer on a countertop
 	var parent_pickup = get_parent()
 	# --- DEBUG PRINT --- 
-	print("[Ingredient] Attempting set_on_countertop_status(false) on parent (clear_countertop): ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
+	## //print("[Ingredient] Attempting set_on_countertop_status(false) on parent (clear_countertop): ", parent_pickup.name if parent_pickup else "null", " Script: ", parent_pickup.get_script() if parent_pickup else "none")
 	# --- END DEBUG --- 
 	if parent_pickup and parent_pickup.has_method("set_on_countertop_status"):
 		parent_pickup.set_on_countertop_status(false)
@@ -242,6 +258,8 @@ func clear_countertop():
 	current_countertop = null
 	on_chopping_board = false
 	stop_processing() # Stop processing if picked up
+	_player_can_interact = false # Ensure player cannot interact if picked up
+	_update_interact_label_visibility()
 	if is_instance_valid(interact_label):
 		interact_label.visible = false
 
@@ -253,18 +271,34 @@ func _update_interact_label_visibility():
 		return 
 
 	# Show interact label only if:
+	# - Player is close enough to interact <--- NEW CHECK
 	# - It can be processed
 	# - It's in the whole state
 	# - It's on a chopping board
 	# - It's NOT currently being processed
-	var should_show = can_be_processed and \
+	var should_show = _player_can_interact and \
+					  can_be_processed and \
 					  current_state == State.WHOLE and \
 					  on_chopping_board and \
 					  not _is_processing_internal
 
-	print("Should show interact label: ", should_show) # Keep debug print for now
-	
+	# Corrected GDScript print format
+	#print("Ingredient (%s): Should show interact label: %s (PlayerCanInteract: %s, CanProcess: %s, State: %s, OnBoard: %s, Processing: %s)" % \
+		#[name, should_show, _player_can_interact, can_be_processed, current_state, on_chopping_board, _is_processing_internal])
+
 	interact_label.visible = should_show
+
+# --- NEW Functions called by Player Script ---
+func player_can_interact():
+	#print("Ingredient (%s): Player can now interact." % name) # Corrected print
+	_player_can_interact = true
+	_update_interact_label_visibility() # Update label when player enters range
+
+func player_cannot_interact():
+	#print("Ingredient (%s): Player can no longer interact." % name) # Corrected print
+	_player_can_interact = false
+	stop_processing() # Stop processing if player moves away
+	_update_interact_label_visibility() # Update label when player leaves range
 
 # --- Helper Functions ---
 # Optional: Add more specific checks or virtual functions for overrides
@@ -280,6 +314,7 @@ func _update_interact_label_visibility():
 # 	current_state = State.PROCESSED if current_state == State.WHOLE else State.WHOLE
 # 	update_visuals()
 # 	print("New state: ", current_state)
+
 
 
 func set_outline(enabled: bool):

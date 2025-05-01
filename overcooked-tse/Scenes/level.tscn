@@ -3,7 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
 [ext_resource type="PackedScene" uid="uid://dxw7cledbpiia" path="res://addons/proto-csgs/proto_csg_box_3d.tscn" id="6_6bp64"]
-[ext_resource type="PackedScene" uid="uid://cnniox8lkfqsr" path="res://Scenes/Food/onion.tscn" id="6_21xkr"]
 [ext_resource type="PackedScene" uid="uid://db8uogurso5wk" path="res://Scenes/countertop.tscn" id="7_6bp64"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="7_344ge"]
 [ext_resource type="Script" path="res://Scenes/timer.gd" id="8_754fn"]
@@ -193,12 +192,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.81175, 0.231706, -2.01185)
 
 [node name="countertop19" parent="Level" instance=ExtResource("7_6bp64")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.38825, 0.231706, -2.01185)
-
-[node name="Onion" parent="." instance=ExtResource("6_21xkr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.34242, 0.677684, 0.284615)
-
-[node name="Onion2" parent="." instance=ExtResource("6_21xkr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.08888, 0.677684, 0.284615)
 
 [node name="Label" type="Label" parent="."]
 anchors_preset = 3

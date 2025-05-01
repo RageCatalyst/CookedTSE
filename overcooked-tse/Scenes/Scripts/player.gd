@@ -8,6 +8,8 @@ const SPEED = 5.0
 
 @onready var hold_position = $HoldPosition
 @onready var interaction_area: Area3D = $InteractionArea # Assign in editor or ensure name matches
+@onready var ray_cast: RayCast3D = $CountertopRaycast
+
 
 # List to track nearby pickup objects
 var nearby_pickups: Array[PickupObject] = []
@@ -15,6 +17,14 @@ var nearby_pickups: Array[PickupObject] = []
 var nearby_ingredients_countertop: Array = []
 # Reference to the currently highlighted object
 var currently_highlighted_pickup: PickupObject = null
+
+# Boost state variables
+var is_boosting: bool = false
+var boost_timer: float = 0.0
+var boost_cooldown_timer: float = 0.0
+
+func _enter_tree():
+	set_multiplayer_authority(name.to_int())
 
 @onready var placement_preview = $PlacementPreview
 var preview_scene = preload("res://Scenes/Food/IngredientPreview.tscn")
@@ -34,28 +44,104 @@ func _input(event: InputEvent) -> void:
 	if player_index == 0 and event.is_action_pressed("exit"):
 		get_tree().quit()
 
+	# --- Debug Controls ---
+	# Corrected action name to "debug_process"
+	if event.is_action_pressed("debug_process"): # Defined in Input Map (e.g., 'B' key)
+		if held_item != null:
+			# Use the existing helper to find the node with the ingredient script
+			# Ensure held_item is treated as PickupObject if _get_ingredient_script expects it
+			var ingredient_script_node = null
+			if held_item is PickupObject:
+				ingredient_script_node = _get_ingredient_script(held_item)
+			else:
+				# If held_item might not be a PickupObject directly, adjust finding logic
+				print("DEBUG: Held item is not a PickupObject, cannot find ingredient script this way.")
+
+
+			if ingredient_script_node:
+				# Check if the ingredient script has the 'finish_processing' method
+				if ingredient_script_node.has_method("finish_processing"):
+					# Check if the ingredient has the 'current_state' property using 'in'
+					if "current_state" in ingredient_script_node:
+						# Check if the ingredient is in the WHOLE state
+						# Access the enum via the instance: ingredient_script_node.State.WHOLE
+						if ingredient_script_node.current_state == ingredient_script_node.State.WHOLE:
+							print("DEBUG: Forcing processing on held item: ", held_item.name)
+							ingredient_script_node.finish_processing() # Call the correct function
+						else:
+							print("DEBUG: Held item is not in WHOLE state (State: %s)." % ingredient_script_node.current_state)
+					else:
+						print("DEBUG: Ingredient script node does not have 'current_state' property.")
+				else:
+					print("DEBUG: Ingredient script node does not have 'finish_processing' method.")
+			else:
+				print("DEBUG: Could not find ingredient script node for held item.")
+		else:
+			print("DEBUG: Not holding any item to process.")
+
+
 func _process(_delta: float) -> void:
-	# Handle interaction input
-	if Input.is_action_just_pressed("interact_p%d" % player_index):
-		if held_item:
-			drop_item() # Existing drop logic
-		elif currently_highlighted_pickup:
-			# Tell the highlighted item it's being picked up
+	# DEBUG: Check held_item at the start of _process
+	# print("Start _process - held_item: ", held_item)
+
+	var interaction_handled_this_frame = false
+	var currently_facing_countertop = get_facing_countertop()
+
+	# --- Handle Interact Input --- 
+	if Input.is_action_just_pressed("interact"):
+		# Priority 1: Interact with countertop/bin if facing one
+		if currently_facing_countertop:
+			# Check if it's an ingredient bin and player is empty-handed
+			if currently_facing_countertop.status == Countertop.Status.INGREDIENT_BIN and held_item == null:
+				var bin_node = currently_facing_countertop.get_node_or_null("ingredient_bin")
+				if bin_node and bin_node.has_method("interact"):
+					print("Interact pressed, held_item is null. Interacting with bin.")
+					bin_node.interact(self)
+					interaction_handled_this_frame = true # Mark interaction as handled
+				else:
+					printerr("Countertop does not have a valid ingredient bin node with an interact method.")
+			# Add other countertop interactions here (e.g., chopping board, stove) if needed
+			# elif currently_facing_countertop.status == ... and held_item != null:
+			#    # Example: Place item on chopping board
+			#    interaction_handled_this_frame = true
+
+		# Priority 2: Drop item if holding one AND interaction wasn't handled above
+		if held_item and not interaction_handled_this_frame:
+			drop_item()
+			interaction_handled_this_frame = true # Mark interaction as handled
+
+		# Priority 3: Pick up loose item if not holding one AND interaction wasn't handled above
+		elif held_item == null and not interaction_handled_this_frame and currently_highlighted_pickup:
 			if currently_highlighted_pickup.has_method("get_picked_up"):
 				currently_highlighted_pickup.get_picked_up(self)
-	for ingredient in nearby_ingredients_countertop:
-		if ingredient.can_be_processed and ingredient.current_state == IngredientBase.State.WHOLE and ingredient.on_chopping_board:
-			if Input.is_action_pressed("chop_p%d" % player_index):
-				ingredient.start_processing()
-			elif Input.is_action_just_released("chop_p%d" % player_index):
-				ingredient.stop_processing()
+				interaction_handled_this_frame = true # Mark interaction as handled
+
+	# --- End Handle Interact Input ---
+
 
 func _physics_process(delta: float) -> void:
-	# Add the gravity.
-	if not is_on_floor():
-		velocity += get_gravity() * delta
+	# --- Handle Boost Timers ---
+	if boost_cooldown_timer > 0:
+		boost_cooldown_timer -= delta
+	if boost_timer > 0:
+		boost_timer -= delta
+		if boost_timer <= 0:
+			is_boosting = false # End boost when timer runs out
 
-	# Update pickup highlighting
+	# --- Handle Boost Input ---
+	# Check if boost can be activated (not already boosting, cooldown finished, moving)
+	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	if Input.is_action_just_pressed("boost") and not is_boosting and boost_cooldown_timer <= 0 and input_dir.length_squared() > 0.1:
+		is_boosting = true
+		boost_timer = BOOST_DURATION
+		boost_cooldown_timer = BOOST_COOLDOWN
+
+	if is_multiplayer_authority():
+		# Add the gravity.
+		if not is_on_floor():
+			velocity += get_gravity() * delta
+
+	# Update pickup highlighting (still needed)
 	_update_pickup_highlight()
 
 	if held_item:
@@ -68,6 +154,21 @@ func _physics_process(delta: float) -> void:
 
 # --- Pickup Highlighting Logic ---
 
+# Helper function to find the ingredient script node
+func _get_ingredient_script(pickup_object: PickupObject) -> Node:
+	if not is_instance_valid(pickup_object):
+		return null
+	# Assuming the script is on a child named "Ingredient Script Holder"
+	var ingredient_node = pickup_object.find_child("Ingredient Script Holder", true, false) 
+	if ingredient_node and ingredient_node.has_method("player_can_interact"): # Check for one of the methods
+		return ingredient_node
+	else:
+		# Fallback: Check if the script might be on the pickup object root itself (less likely)
+		if pickup_object.has_method("player_can_interact"):
+			return pickup_object
+	# printerr("Player: Could not find ingredient script node for ", pickup_object.name) # Optional: Reduce noise
+	return null
+
 func _on_interaction_area_body_entered(body: Node3D):
 	# Check if the body is a PickupObject and not already in the list
 	if body is PickupObject and not nearby_pickups.has(body):
@@ -79,10 +180,18 @@ func _on_interaction_area_body_exited(body: Node3D):
 	# Remove the body if it's a PickupObject
 	if body is PickupObject:
 		nearby_pickups.erase(body)
-		# If the exited body was the highlighted one, clear the highlight
+		# If the exited body was the highlighted one, clear the highlight AND interaction state
 		if currently_highlighted_pickup == body:
-			if currently_highlighted_pickup and currently_highlighted_pickup.has_method("disable_highlight"):
-				currently_highlighted_pickup.disable_highlight()
+			if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup):
+				# Tell ingredient it cannot be interacted with
+				var ingredient_script = _get_ingredient_script(currently_highlighted_pickup)
+				if ingredient_script:
+					ingredient_script.player_cannot_interact()
+				
+				# Disable visual highlight
+				if currently_highlighted_pickup.has_method("disable_highlight"):
+					currently_highlighted_pickup.disable_highlight()
+					
 			currently_highlighted_pickup = null
 	if body is IngredientBase:
 		nearby_ingredients_countertop.erase(body)
@@ -91,13 +200,20 @@ func _update_pickup_highlight():
 	var closest_pickup: PickupObject = null
 	var min_dist_sq = INF
 
-	# If holding an item, ensure nothing is highlighted
+	# If holding an item, ensure nothing is highlighted or interactable
 	if held_item:
-		if currently_highlighted_pickup:
+		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup):
+			# Tell ingredient it cannot be interacted with
+			var ingredient_script = _get_ingredient_script(currently_highlighted_pickup)
+			if ingredient_script:
+				ingredient_script.player_cannot_interact()
+				
+			# Disable visual highlight
 			if currently_highlighted_pickup.has_method("disable_highlight"):
 				currently_highlighted_pickup.disable_highlight()
+				
 			currently_highlighted_pickup = null
-		return
+		return # Exit early if holding an item
 
 	# Find the closest pickup object in range
 	for pickup in nearby_pickups:
@@ -112,17 +228,31 @@ func _update_pickup_highlight():
 			min_dist_sq = dist_sq
 			closest_pickup = pickup
 
-	# Update highlighting based on the closest found object
+	# Update highlighting and interaction state based on the closest found object
 	if closest_pickup != currently_highlighted_pickup:
-		# Disable highlight on the old one (if any)
-		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup) and currently_highlighted_pickup.has_method("disable_highlight"):
-			currently_highlighted_pickup.disable_highlight()
+		# --- Handle the OLD highlighted item ---
+		if currently_highlighted_pickup and is_instance_valid(currently_highlighted_pickup):
+			# Tell OLD ingredient it cannot be interacted with
+			var old_ingredient_script = _get_ingredient_script(currently_highlighted_pickup)
+			if old_ingredient_script:
+				old_ingredient_script.player_cannot_interact()
+				
+			# Disable OLD visual highlight
+			if currently_highlighted_pickup.has_method("disable_highlight"):
+				currently_highlighted_pickup.disable_highlight()
+
+		# --- Handle the NEW highlighted item ---
+		if closest_pickup and is_instance_valid(closest_pickup): # Check validity for the new one too
+			# Tell NEW ingredient it can be interacted with
+			var new_ingredient_script = _get_ingredient_script(closest_pickup)
+			if new_ingredient_script:
+				new_ingredient_script.player_can_interact()
+				
+			# Enable NEW visual highlight
+			if closest_pickup.has_method("enable_highlight"):
+				closest_pickup.enable_highlight()
 		
-		# Enable highlight on the new one (if any)
-		if closest_pickup and closest_pickup.has_method("enable_highlight"):
-			closest_pickup.enable_highlight()
-		
-		# Update the reference
+		# Update the reference AFTER handling both old and new
 		currently_highlighted_pickup = closest_pickup
 
 # Helper to safely remove invalid instances from the list
@@ -146,6 +276,8 @@ func _handle_placement_preview():
 							held_item_ingredient_name = "tomato"
 						"mushroom":
 							held_item_ingredient_name = "mushroom"
+						"onion soup":
+							held_item_ingredient_name = "onion soup"
 				if held_item_ingredient_name:
 					show_preview(countertop, held_item_ingredient_name)
 				else:
@@ -161,7 +293,7 @@ func _handle_placement_preview():
 					preview_instance.set_ingredient_type(held_item_ingredient_name)
 			if preview_instance:
 				preview_instance.visible = true
-			return
+			return # Return if snap point found and preview handled
 	_remove_placement_preview()
 
 func _remove_placement_preview():
@@ -179,16 +311,22 @@ func _handle_movement() -> void:
 		)
 	var direction := Vector3(input_dir.x, 0, input_dir.y).normalized()
 
+	# Determine current speed based on boost state
+	var current_speed = SPEED
+	if is_boosting:
+		current_speed = SPEED * BOOST_MULTIPLIER
+
 	if direction.length() > 0.1:
 		facing_direction = direction
 		look_at(global_transform.origin + facing_direction, Vector3.UP)
 
 	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+		velocity.x = direction.x * current_speed # Use current_speed
+		velocity.z = direction.z * current_speed # Use current_speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
+		# Still apply boost if moving due to inertia even if input stops
+		velocity.x = move_toward(velocity.x, 0, current_speed) # Use current_speed
+		velocity.z = move_toward(velocity.z, 0, current_speed) # Use current_speed
 
 func is_facing_target(target_node: Node3D, max_angle_degrees := 60.0) -> bool:
 	var to_target = (target_node.global_transform.origin - global_transform.origin).normalized()
@@ -203,6 +341,12 @@ func pick_up_item(item_node: PickupObject): # Changed type hint
 	
 	if held_item == null:
 		held_item = item_node
+		# DEBUG: Check held_item immediately after assignment
+		var item_name = "None"
+		if held_item:
+			item_name = held_item.name
+		print("Inside pick_up_item - assigned held_item: ", held_item, " (Name: ", item_name, ")")
+
 		attach_item_to_hand(item_node)
 
 		# Ensure the just picked up item is no longer highlighted
@@ -238,58 +382,83 @@ func drop_item():
 	var dropped_item = held_item
 	held_item = null
 	print("player dropped: " + dropped_item.name)
+
 	var countertop = get_facing_countertop()
+
+	# Check if facing a valid countertop target
 	if countertop and is_facing_target(countertop):
-		_snap_item_to_countertop(dropped_item, countertop)
-	else:
-		_drop_item_in_front(dropped_item)
+		# Case 1: Is it a stove countertop?
+		if countertop.status == Countertop.Status.STOVE:
+			var stove = countertop.get_stove_node()
+			# Is the stove idle?
+			if stove and stove.current_state == Stove.State.IDLE:
+				print("Player adding ingredient to stove via countertop: ", dropped_item.name)
+				stove.add_ingredient(dropped_item) # Stove handles deleting the node
+				return # SUCCESS: Item added to stove
+			# else: Stove is busy or invalid, fall through to drop in front
+
+		# Case 2: Is it a non-stove, non-bin countertop and empty?
+		elif countertop.status != Countertop.Status.STOVE and countertop.status != Countertop.Status.INGREDIENT_BIN and countertop.get_item() == null:
+			_snap_item_to_countertop(dropped_item, countertop)
+			return # SUCCESS: Item snapped to regular countertop
+		# else: Countertop is stove, bin, or occupied, fall through to drop in front
+
+	# Fallback: No valid countertop target, or target was occupied/busy/bin
+	_drop_item_in_front(dropped_item)
 
 func _snap_item_to_countertop(item, countertop):
+	# Double-check if countertop is free before proceeding (belt and braces)
+	if countertop.get_item() != null:
+		print("Countertop occupied, dropping in front instead.")
+		_drop_item_in_front(item)
+		return
+
 	var snap_point = countertop.get_node_or_null("SnapPoint")
 	if snap_point:
+		# Tell the countertop it now holds this item *before* reparenting
+		countertop.place_item(item)
+
 		item.reparent(countertop)
 		item.global_transform = snap_point.global_transform
 		if item is RigidBody3D:
-			item.freeze = true
+			item.freeze = true # Keep physics frozen
 
 		# Find the node with the ingredient script and call set_countertop
 		var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false) # Recursive search, ignore owner
 		if ingredient_script_node and ingredient_script_node.has_method("set_countertop"):
 			ingredient_script_node.set_countertop(countertop)
 		else:
-			# Fallback: Check if the script is on the root item itself (less likely now)
-			if item.has_method("set_countertop"):
-				item.set_countertop(countertop)
-			else:
-				printerr("Could not find ingredient script with set_countertop method on ", item.name)
-
+			printerr("Player: Could not find ingredient script node or set_countertop method on dropped item:", item.name)
 	else:
-		print("SnapPoint not found on countertop: ", countertop.name)
+		printerr("Player: Countertop missing SnapPoint node:", countertop.name)
+		# Fallback if snap point is missing but countertop was somehow deemed free
+		_drop_item_in_front(item)
 
 func _drop_item_in_front(item):
 	item.reparent(get_parent()) # Reparent to the main scene tree
 	item.global_transform.origin = global_transform.origin + facing_direction * 1.5 # Use facing direction
 	if item is RigidBody3D:
-		item.freeze = false
-		# item.apply_impulse(Vector3.ZERO, Vector3(0, 1, -2)) # Optional impulse
+		item.freeze = false # Unfreeze physics when dropped on the ground
 
 	# Find the node with the ingredient script and call remove_from_countertop
+	# This ensures its internal state knows it's not on a counter anymore
 	var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false)
 	if ingredient_script_node and ingredient_script_node.has_method("remove_from_countertop"):
 		ingredient_script_node.remove_from_countertop()
-	else:
-		# Fallback: Check if the script is on the root item itself
-		if item.has_method("remove_from_countertop"):
-			item.remove_from_countertop()
+	# else: # Don't necessarily error if it wasn't on a countertop to begin with
+	# 	printerr("Player: Could not find ingredient script node or remove_from_countertop method on dropped item:", item.name)
 
 # Returns the countertop directly in front of the player using a RayCast3D node named 'CountertopRaycast'
 func get_facing_countertop():
-	var raycast = $CountertopRaycast
-	if raycast.is_colliding():
-		var collider = raycast.get_collider()
-		if collider and collider.is_in_group("countertops"):
-			#print("Countertop found: " + collider.name)
-			return collider.get_parent().get_parent()  # Assuming the countertop is a child of the parent node
+	if ray_cast.is_colliding():
+		var collider = ray_cast.get_collider()
+
+		# Traverse up the tree from the collider to find the Countertop node
+		var current_node = collider
+		while current_node:
+			if current_node is Countertop:
+				return current_node
+			current_node = current_node.get_parent()
 	return null
 
 func show_preview(countertop: Node3D, ingredient_type: String):

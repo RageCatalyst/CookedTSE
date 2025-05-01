@@ -22,6 +22,19 @@ var timer_started = false # Ensures timer only starts the one time
 # var player = null
 var _is_on_countertop: bool = false # Track if the ingredient is on a countertop
 
+func get_item_name():
+	for group_name in get_groups():
+		match group_name:
+			"chopped onion":
+				return group_name
+			"chopped tomato":
+				return group_name
+			"chopped mushroom":
+				return group_name
+			_:
+				print("not valid")
+				return null
+
 func _ready():
 	if visual_mesh:
 		if visual_mesh.mesh and visual_mesh.mesh.get_surface_count() > 0:
@@ -98,7 +111,7 @@ func get_picked_up(player: CharacterBody3D):
 
 # Called by the child ingredient script when it's placed on/removed from a countertop
 func set_on_countertop_status(status: bool):
-	print("PickupObject " + str(item_name) + " received set_on_countertop_status: " + str(status))
+	#print("PickupObject " + str(item_name) + " received set_on_countertop_status: " + str(status))
 	_is_on_countertop = status
 	# No longer need to update outline visibility here
 	# _update_outline_visibility()
@@ -112,6 +125,7 @@ func enable_highlight():
 func disable_highlight():
 	if outline_material:
 		outline_material.set_shader_parameter("outline_enabled", false)
+		
 
 # Removed _update_outline_visibility, player handles this logic
 # func _update_outline_visibility():
