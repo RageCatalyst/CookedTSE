@@ -1,6 +1,7 @@
 extends HBoxContainer
 
 @export var order_scene: PackedScene  
+@export var orders: Array[String] 
 
 var spawn_timer := 0.0
 
@@ -15,5 +16,6 @@ func _process(delta):
 
 func spawn_order():
 	var new_order = order_scene.instantiate()
+	orders.append("onion soup")
 	add_child(new_order)
 	print("Spawned order: ", new_order)

@@ -26,6 +26,7 @@ func _process(delta):
 	
 	if time_left <= 0:
 		queue_free()  # remove order if time is up
+		# remove order from array
 
 func start_shake():
 	var tween = create_tween()

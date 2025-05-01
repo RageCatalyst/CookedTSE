@@ -1,26 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://bme8a3a2ws61"]
+[gd_scene load_steps=5 format=3 uid="uid://bme8a3a2ws61"]
 
 [ext_resource type="Script" uid="uid://cvltg03mwdlkv" path="res://Scenes/order.gd" id="1_vwbfx"]
+[ext_resource type="Texture2D" uid="uid://djcn40h0d6261" path="res://onion.jpeg" id="2_xeqm4"]
+[ext_resource type="Texture2D" uid="uid://cktpvc8foytsy" path="res://onion soup.jpeg" id="3_fnvfm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_70v6w"]
 bg_color = Color(0.0823529, 0.333333, 0.0862745, 1)
-
-[sub_resource type="Gradient" id="Gradient_xeqm4"]
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_fnvfm"]
-gradient = SubResource("Gradient_xeqm4")
-
-[sub_resource type="Gradient" id="Gradient_ph2o0"]
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_edq7g"]
-gradient = SubResource("Gradient_ph2o0")
-
-[sub_resource type="Gradient" id="Gradient_70v6w"]
-offsets = PackedFloat32Array(0, 0.812785, 1)
-colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_y3t5d"]
-gradient = SubResource("Gradient_70v6w")
 
 [node name="Order" type="Panel"]
 custom_minimum_size = Vector2(270, 45)
@@ -47,19 +32,31 @@ layout_mode = 2
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="TextureRect2" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
-custom_minimum_size = Vector2(0, 10)
+[node name="Ingredient1" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = SubResource("GradientTexture2D_fnvfm")
+size_flags_horizontal = 3
+texture = ExtResource("2_xeqm4")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="TextureRect3" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+[node name="Ingredient2" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = SubResource("GradientTexture2D_edq7g")
+texture = ExtResource("2_xeqm4")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="TextureRect4" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+[node name="Ingredient3" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = SubResource("GradientTexture2D_edq7g")
+texture = ExtResource("2_xeqm4")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+[node name="FinalDish" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = SubResource("GradientTexture2D_y3t5d")
+texture = ExtResource("3_fnvfm")
+expand_mode = 1
+stretch_mode = 5
