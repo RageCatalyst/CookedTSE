@@ -299,19 +299,19 @@ func _update_interact_label_visibility():
 					  not _is_processing_internal
 
 	# Corrected GDScript print format
-	print("Ingredient (%s): Should show interact label: %s (PlayerCanInteract: %s, CanProcess: %s, State: %s, OnBoard: %s, Processing: %s)" % \
-		[name, should_show, _player_can_interact, can_be_processed, current_state, on_chopping_board, _is_processing_internal])
+	#print("Ingredient (%s): Should show interact label: %s (PlayerCanInteract: %s, CanProcess: %s, State: %s, OnBoard: %s, Processing: %s)" % \
+		#[name, should_show, _player_can_interact, can_be_processed, current_state, on_chopping_board, _is_processing_internal])
 
 	interact_label.visible = should_show
 
 # --- NEW Functions called by Player Script ---
 func player_can_interact():
-	print("Ingredient (%s): Player can now interact." % name) # Corrected print
+	#print("Ingredient (%s): Player can now interact." % name) # Corrected print
 	_player_can_interact = true
 	_update_interact_label_visibility() # Update label when player enters range
 
 func player_cannot_interact():
-	print("Ingredient (%s): Player can no longer interact." % name) # Corrected print
+	#print("Ingredient (%s): Player can no longer interact." % name) # Corrected print
 	_player_can_interact = false
 	stop_processing() # Stop processing if player moves away
 	_update_interact_label_visibility() # Update label when player leaves range

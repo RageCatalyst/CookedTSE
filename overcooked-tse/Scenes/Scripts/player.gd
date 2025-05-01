@@ -73,10 +73,43 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(_delta: float) -> void:
-	# Handle interaction input
-	# Moved interaction logic to _physics_process or specific input handling
-	# to avoid issues with physics state checking in _process
-	pass # Keep _process if needed for other non-physics things
+	# DEBUG: Check held_item at the start of _process
+	# print("Start _process - held_item: ", held_item)
+
+	var interaction_handled_this_frame = false
+	var currently_facing_countertop = get_facing_countertop()
+
+	# --- Handle Interact Input --- 
+	if Input.is_action_just_pressed("interact"):
+		# Priority 1: Interact with countertop/bin if facing one
+		if currently_facing_countertop:
+			# Check if it's an ingredient bin and player is empty-handed
+			if currently_facing_countertop.status == Countertop.Status.INGREDIENT_BIN and held_item == null:
+				var bin_node = currently_facing_countertop.get_node_or_null("ingredient_bin")
+				if bin_node and bin_node.has_method("interact"):
+					print("Interact pressed, held_item is null. Interacting with bin.")
+					bin_node.interact(self)
+					interaction_handled_this_frame = true # Mark interaction as handled
+				else:
+					printerr("Countertop does not have a valid ingredient bin node with an interact method.")
+			# Add other countertop interactions here (e.g., chopping board, stove) if needed
+			# elif currently_facing_countertop.status == ... and held_item != null:
+			#    # Example: Place item on chopping board
+			#    interaction_handled_this_frame = true
+
+		# Priority 2: Drop item if holding one AND interaction wasn't handled above
+		if held_item and not interaction_handled_this_frame:
+			drop_item()
+			interaction_handled_this_frame = true # Mark interaction as handled
+
+		# Priority 3: Pick up loose item if not holding one AND interaction wasn't handled above
+		elif held_item == null and not interaction_handled_this_frame and currently_highlighted_pickup:
+			if currently_highlighted_pickup.has_method("get_picked_up"):
+				currently_highlighted_pickup.get_picked_up(self)
+				interaction_handled_this_frame = true # Mark interaction as handled
+
+	# --- End Handle Interact Input ---
+
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():
@@ -84,16 +117,7 @@ func _physics_process(delta: float) -> void:
 		if not is_on_floor():
 			velocity += get_gravity() * delta
 
-	# Handle interaction input here as it often relates to physics state (nearby objects)
-	if Input.is_action_just_pressed("interact"):
-		if held_item:
-			drop_item() # Existing drop logic
-		elif currently_highlighted_pickup:
-			# Tell the highlighted item it's being picked up
-			if currently_highlighted_pickup.has_method("get_picked_up"):
-				currently_highlighted_pickup.get_picked_up(self)
-
-	# Update pickup highlighting
+	# Update pickup highlighting (still needed)
 	_update_pickup_highlight()
 
 	if held_item:
@@ -224,6 +248,8 @@ func _handle_placement_preview():
 							held_item_ingredient_name = "tomato"
 						"mushroom":
 							held_item_ingredient_name = "mushroom"
+						"onion soup":
+							held_item_ingredient_name = "onion soup"
 				if held_item_ingredient_name:
 					show_preview(countertop, held_item_ingredient_name)
 				else:
@@ -270,6 +296,12 @@ func is_facing_target(target_node: Node3D, max_angle_degrees := 60.0) -> bool:
 func pick_up_item(item_node: PickupObject): # Changed type hint
 	if held_item == null:
 		held_item = item_node
+		# DEBUG: Check held_item immediately after assignment
+		var item_name = "None"
+		if held_item:
+			item_name = held_item.name
+		print("Inside pick_up_item - assigned held_item: ", held_item, " (Name: ", item_name, ")")
+
 		attach_item_to_hand(item_node)
 
 		# Ensure the just picked up item is no longer highlighted
@@ -316,13 +348,13 @@ func drop_item():
 				return # SUCCESS: Item added to stove
 			# else: Stove is busy or invalid, fall through to drop in front
 
-		# Case 2: Is it a non-stove countertop and empty?
-		elif countertop.status != Countertop.Status.STOVE and countertop.get_item() == null:
+		# Case 2: Is it a non-stove, non-bin countertop and empty?
+		elif countertop.status != Countertop.Status.STOVE and countertop.status != Countertop.Status.INGREDIENT_BIN and countertop.get_item() == null:
 			_snap_item_to_countertop(dropped_item, countertop)
 			return # SUCCESS: Item snapped to regular countertop
-		# else: Regular countertop is occupied, fall through to drop in front
+		# else: Countertop is stove, bin, or occupied, fall through to drop in front
 
-	# Fallback: No valid countertop target, or target was occupied/busy
+	# Fallback: No valid countertop target, or target was occupied/busy/bin
 	_drop_item_in_front(dropped_item)
 
 func _snap_item_to_countertop(item, countertop):

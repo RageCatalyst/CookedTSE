@@ -55,6 +55,24 @@ func remove_item():
 func get_item() -> Node:
 	return item_on_countertop
 
+func place_item_from_stove(item: Node) -> void:
+	# Place the item on the SnapPoint and set as current item
+	var snap_point = get_node_or_null("SnapPoint")
+	if snap_point:
+		place_item(item) # Set item_on_countertop
+		item.reparent(self)
+		print("Countertop: Item is being placed: ", snap_point.global_transform)
+		item.global_transform = snap_point.global_transform
+		item.scale = Vector3.ONE
+		if item is RigidBody3D:
+			item.freeze = true
+		# Set the countertop reference in the ingredient script if present
+		var ingredient_script_node = item.find_child("Ingredient Script Holder", true, false)
+		if ingredient_script_node and ingredient_script_node.has_method("set_countertop"):
+			ingredient_script_node.set_countertop(self)
+	else:
+		printerr("Countertop: SnapPoint not found when placing item from stove!")
+
 # New helper function to get the stove node if this is a stove countertop
 func get_stove_node() -> Stove:
 	if status != Status.STOVE:

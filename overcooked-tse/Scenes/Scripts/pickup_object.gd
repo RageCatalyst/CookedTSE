@@ -111,7 +111,7 @@ func get_picked_up(player: CharacterBody3D):
 
 # Called by the child ingredient script when it's placed on/removed from a countertop
 func set_on_countertop_status(status: bool):
-	print("PickupObject " + str(item_name) + " received set_on_countertop_status: " + str(status))
+	#print("PickupObject " + str(item_name) + " received set_on_countertop_status: " + str(status))
 	_is_on_countertop = status
 	# No longer need to update outline visibility here
 	# _update_outline_visibility()

@@ -199,6 +199,8 @@ func _check_for_recipe() -> bool:
 			if recipe_matches:
 				matched_recipe_output = meal_name
 				print("Stove: Recipe matched - ", meal_name)
+
+				_start_cooking()
 				# Optional: Show visual indicator that recipe is ready to cook
 				return true
 	# No recipe matched or validation failed
@@ -218,6 +220,7 @@ func _start_cooking():
 func _finish_cooking():
 	print("Stove: Finished cooking ", matched_recipe_output)
 	current_state = State.COOKING_COMPLETE
+	_deliver_meal()
 	cooking_timer = 0.0 # Reset timer for burn duration
 	# Update visuals (e.g., hide progress, show "ready" indicator)
 	# if progress_bar: progress_bar.visible = false
@@ -282,6 +285,7 @@ func _deliver_meal():
 
 	if meal_scene:
 		# 2. Instantiate the meal scene
+		print("Stove: Spawning meal scene for ", matched_recipe_output)
 		var meal_instance = meal_scene.instantiate()
 
 		# 3. Add to scene tree BEFORE passing to place_item
@@ -289,7 +293,7 @@ func _deliver_meal():
 		get_tree().current_scene.add_child(meal_instance)
 
 		# 4. Use the countertop's function to place the item
-		countertop.place_item(meal_instance) # place_item should handle positioning and setting current_item
+		countertop.place_item_from_stove(meal_instance) # place_item should handle positioning and setting current_item
 
 		print("Stove: Spawned and placed ", matched_recipe_output, " on countertop ", countertop.name)
 	else:
@@ -318,6 +322,16 @@ func _clear_ingredients():
 	current_ingredient_counts.clear()
 	matched_recipe_output = "" # Ensure matched recipe is cleared too
 
+func _unhandled_input(event: InputEvent) -> void:
+	if get_parent().has_stove():
+		if event.is_action_pressed("debug_start_cooking"):
+			# Debug: Start cooking immediately
+			matched_recipe_output = "Onion Soup" # Set a default recipe for testing
+			if current_state == State.IDLE:
+				_start_cooking()
+			else:
+				print("Stove: Cannot start cooking in current state: ", current_state)
+		
 
 # Helper needed for add_ingredient/remove_ingredient
 # Assumes the PickupObject script has this method

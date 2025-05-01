@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://db8uogurso5wk"]
+[gd_scene load_steps=16 format=3 uid="uid://db8uogurso5wk"]
 
 [ext_resource type="Script" uid="uid://bmjajaiytj46y" path="res://Scenes/Scripts/countertop.gd" id="1_eqru6"]
 [ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
@@ -6,9 +6,10 @@
 [ext_resource type="Texture2D" uid="uid://c0x0tvmbhaqck" path="res://addons/proto-csgs/textures/orange/texture_13.png" id="4_6qt3v"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="4_pe3oq"]
 [ext_resource type="Script" uid="uid://cltira21wj7wr" path="res://Scenes/Scripts/stove.gd" id="5_vimie"]
-[ext_resource type="PackedScene" uid="uid://cy0vbvps6doyh" path="res://Models/Homemade/soup_onion.glb" id="6_fnohm"]
+[ext_resource type="PackedScene" uid="uid://c0rlb2qmms42a" path="res://Scenes/Food/onion soup.tscn" id="6_fnohm"]
 [ext_resource type="Texture2D" uid="uid://bn66p4ar3fje4" path="res://addons/proto-csgs/textures/red/texture_13.png" id="6_rvg4k"]
 [ext_resource type="Texture2D" uid="uid://cmuv3ve5x2al8" path="res://addons/proto-csgs/textures/light/texture_13.png" id="7_b2fvh"]
+[ext_resource type="Script" uid="uid://mt8whwmecxh" path="res://Scenes/Scripts/ingredient_bin.gd" id="9_dg1n2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wxj5o"]
 size = Vector3(1.99641, 2.12494, 2.00485)
@@ -82,6 +83,7 @@ block_color = 5
 
 [node name="ingredient_bin" type="Node3D" parent="." groups=["ingredient_bins"]]
 visible = false
+script = ExtResource("9_dg1n2")
 
 [node name="ProtoCSGBox3D" parent="ingredient_bin" instance=ExtResource("3_6qt3v")]
 transform = Transform3D(1.175, 0, 0, 0, 1.175, 0, 0, 0, 1.175, 0, 1.39366, 0)

@@ -1,16 +1,14 @@
-[gd_scene load_steps=10 format=3 uid="uid://ckd5apa3tpca2"]
+[gd_scene load_steps=8 format=3 uid="uid://c0rlb2qmms42a"]
 
 [ext_resource type="Script" uid="uid://54lbxx5mbfnf" path="res://Scenes/Scripts/pickup_object.gd" id="1_tihtd"]
 [ext_resource type="Script" uid="uid://cya31isrhpgv8" path="res://Scenes/Scripts/ingredient.gd" id="2_ue26s"]
-[ext_resource type="ArrayMesh" uid="uid://cumrxfnt6wdpc" path="res://Meshes/onion.mesh" id="3_v1501"]
-[ext_resource type="ArrayMesh" uid="uid://bnqah73ej86e5" path="res://Meshes/chopped onion.mesh" id="4_hajds"]
-[ext_resource type="ArrayMesh" uid="uid://cuiu44espdumw" path="res://Meshes/onion soup.tres" id="5_ue26s"]
+[ext_resource type="ArrayMesh" uid="uid://bjsybbx5qdn5e" path="res://Meshes/onion soup.mesh" id="5_ue26s"]
 [ext_resource type="Material" uid="uid://jxchis28o6y6" path="res://Materials/outline_shader_material.tres" id="6_v1501"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_d4jta"]
 radius = 0.494871
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hajds"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iln4q"]
 next_pass = ExtResource("6_v1501")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_njak0"]
@@ -23,11 +21,10 @@ item_name = "Onion"
 visual_mesh = NodePath("OnionSoupMesh")
 
 [node name="Ingredient Script Holder" type="Node3D" parent="."]
-visible = false
 script = ExtResource("2_ue26s")
 initial_state = 1
-whole_mesh = ExtResource("3_v1501")
-processed_mesh = ExtResource("4_hajds")
+whole_mesh = ExtResource("5_ue26s")
+processed_mesh = ExtResource("5_ue26s")
 can_be_processed = false
 mesh_node_path = NodePath("../OnionSoupMesh")
 
@@ -44,7 +41,7 @@ shape = SubResource("SphereShape3D_d4jta")
 transform = Transform3D(-0.495, -4.32743e-08, 4.32743e-08, -4.32743e-08, 0.495, 4.32743e-08, -4.32743e-08, 4.32743e-08, -0.495, 0.00259912, 0.180825, -0.000743389)
 mesh = ExtResource("5_ue26s")
 skeleton = NodePath("")
-surface_material_override/0 = SubResource("StandardMaterial3D_hajds")
+surface_material_override/0 = SubResource("StandardMaterial3D_iln4q")
 
 [node name="Area3D" type="Area3D" parent="."]
 
