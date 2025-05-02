@@ -4,7 +4,7 @@ var label: Label
 var timer_started = false  # Ensure timer only starts once
 
 func _ready() -> void:
-	label = $"../Label"
+	label = $"../TimerLabel"
 	connect("timeout", Callable(self, "_on_timer_timeout"))
 
 func _process(_delta: float) -> void:
