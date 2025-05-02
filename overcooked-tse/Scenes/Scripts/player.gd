@@ -347,6 +347,7 @@ func _handle_movement() -> void:
 		velocity.x = direction.x * current_speed # Use current_speed
 		velocity.z = direction.z * current_speed # Use current_speed
 	else:
+
 		# Still apply boost if moving due to inertia even if input stops
 		velocity.x = move_toward(velocity.x, 0, current_speed) # Use current_speed
 		velocity.z = move_toward(velocity.z, 0, current_speed) # Use current_speed

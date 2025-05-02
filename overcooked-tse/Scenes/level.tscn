@@ -1,11 +1,14 @@
-[gd_scene load_steps=9 format=3 uid="uid://n14oq1723pyp"]
+[gd_scene load_steps=14 format=3 uid="uid://n14oq1723pyp"]
 
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
 [ext_resource type="PackedScene" uid="uid://dxw7cledbpiia" path="res://addons/proto-csgs/proto_csg_box_3d.tscn" id="6_6bp64"]
 [ext_resource type="PackedScene" uid="uid://db8uogurso5wk" path="res://Scenes/countertop.tscn" id="7_6bp64"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="7_344ge"]
-[ext_resource type="Script" path="res://Scenes/timer.gd" id="8_754fn"]
+[ext_resource type="FontFile" uid="uid://di7id2uirl0sf" path="res://SUPER BOOM.otf" id="8_qxfql"]
+[ext_resource type="Script" uid="uid://dydt7ksyxha0e" path="res://Scenes/timer.gd" id="9_ha31o"]
+[ext_resource type="Script" uid="uid://ce52c767k0v" path="res://Scenes/OrdersManager.gd" id="10_pa6b8"]
+[ext_resource type="PackedScene" uid="uid://bme8a3a2ws61" path="res://Scenes/order.tscn" id="11_crh0w"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ynf5e"]
 resource_local_to_scene = true
@@ -192,7 +195,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.81175, 0.231706, -2.01185)
 [node name="countertop19" parent="Level" instance=ExtResource("7_6bp64")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.38825, 0.231706, -2.01185)
 
-[node name="Label" type="Label" parent="."]
+[node name="Onion" parent="." instance=ExtResource("6_21xkr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.71264, 0.677684, 0.284615)
+
+[node name="Onion2" parent="." instance=ExtResource("6_21xkr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.71264, 0.677684, 0.284615)
+
+[node name="TimerLabel" type="Label" parent="."]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -202,6 +211,8 @@ offset_left = -122.0
 offset_top = -56.0
 grow_horizontal = 0
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("8_qxfql")
+
 theme_override_font_sizes/font_size = 40
 text = "placeholder"
 horizontal_alignment = 1
@@ -210,4 +221,21 @@ vertical_alignment = 1
 [node name="Timer" type="Timer" parent="."]
 wait_time = 150.0
 one_shot = true
-script = ExtResource("8_754fn")
+script = ExtResource("9_ha31o")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UIRoot" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/UIRoot"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/separation = 100
+script = ExtResource("10_pa6b8")
+order_scene = ExtResource("11_crh0w")
+metadata/_edit_use_anchors_ = true
