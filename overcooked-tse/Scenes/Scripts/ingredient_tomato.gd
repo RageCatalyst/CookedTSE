@@ -1,5 +1,6 @@
-# # ingredient_onion.gd
+# # ingredient_tomato.gd
 # extends Node3D
+# Change the related onion bits to tomato
 
 # # Enum for onion states
 # enum State { WHOLE, CHOPPED }

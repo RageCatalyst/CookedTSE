@@ -1,23 +1,26 @@
-[gd_scene load_steps=9 format=3 uid="uid://cnniox8lkfqsr"]
+[gd_scene load_steps=10 format=3 uid="uid://cnniox8lkfqsr"]
 
 [ext_resource type="Script" uid="uid://54lbxx5mbfnf" path="res://Scenes/Scripts/pickup_object.gd" id="1_yec2b"]
 [ext_resource type="ArrayMesh" uid="uid://cumrxfnt6wdpc" path="res://Meshes/onion.mesh" id="2_fq617"]
 [ext_resource type="Script" uid="uid://cya31isrhpgv8" path="res://Scenes/Scripts/ingredient.gd" id="3_fq617"]
 [ext_resource type="ArrayMesh" uid="uid://bnqah73ej86e5" path="res://Meshes/chopped onion.mesh" id="4_8bh2q"]
 [ext_resource type="PackedScene" uid="uid://bpbe4daitnftg" path="res://Scenes/Food/chopped onion.tscn" id="4_xxxxx"]
-[ext_resource type="Material" path="res://Materials/onion_mat.tres" id="6_e258v"]
+[ext_resource type="Shader" uid="uid://i0w0mk3j5oj3" path="res://Materials/outline_shader.tres" id="6_e258v"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_d4jta"]
 radius = 0.494871
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l721s"]
+render_priority = 0
+shader = ExtResource("6_e258v")
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_njak0"]
 radius = 2.06045
 
-[node name="Onion" type="RigidBody3D" node_paths=PackedStringArray("visual_mesh") groups=["onion"]]
-collision_layer = 2
+[node name="Onion" type="RigidBody3D" groups=["onion"]]
+collision_layer = 0
 script = ExtResource("1_yec2b")
 item_name = "Onion"
-visual_mesh = NodePath("OnionMesh")
 
 [node name="Ingredient Script Holder" type="Node3D" parent="."]
 script = ExtResource("3_fq617")
@@ -38,7 +41,7 @@ shape = SubResource("SphereShape3D_d4jta")
 [node name="OnionMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.445, 6.71931e-08, 0, -6.71931e-08, -0.445, 0, 0, 0, 0.445, 0, 0, 0)
 mesh = ExtResource("2_fq617")
-surface_material_override/0 = ExtResource("6_e258v")
+surface_material_override/0 = SubResource("ShaderMaterial_l721s")
 
 [node name="Area3D" type="Area3D" parent="."]
 

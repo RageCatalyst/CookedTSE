@@ -7,7 +7,7 @@ func _ready() -> void:
 	label = $"../TimerLabel"
 	connect("timeout", Callable(self, "_on_timer_timeout"))
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var minutes = floor(time_left / 60)
 	var seconds = int(time_left) % 60
 
@@ -25,3 +25,6 @@ func _start_timer() -> void:
 		start()  # Call Timer.start() directly
 		timer_started = true
 		print("Timer start")
+
+func _on_item_picked_up():
+	_start_timer()
