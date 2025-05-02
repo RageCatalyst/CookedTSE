@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bd6ae1vio0ubo"]
+[gd_scene load_steps=11 format=3 uid="uid://bd6ae1vio0ubo"]
 
 [ext_resource type="Script" uid="uid://bqx1m85gdvgw2" path="res://Scenes/Scripts/player.gd" id="1_b71vn"]
 [ext_resource type="PackedScene" uid="uid://dilcl7aco8lba" path="res://addons/proto-csgs/proto_csg_cylinder_3d.tscn" id="2_v3dgr"]
@@ -22,6 +22,17 @@ uv1_triplanar = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5ixxa"]
 size = Vector3(1.23654, 2.23962, 2.75195)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_5ixxa"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:held_item_ingredient_name")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [node name="CharacterBody3D" type="CharacterBody3D" groups=["player"]]
 script = ExtResource("1_b71vn")
@@ -55,3 +66,6 @@ collision_mask = 3
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00315857, 0.112976, -0.875977)
 shape = SubResource("BoxShape3D_5ixxa")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_5ixxa")

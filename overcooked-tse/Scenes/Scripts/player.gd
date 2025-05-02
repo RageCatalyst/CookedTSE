@@ -4,6 +4,7 @@ const SPEED = 5.0
 const BOOST_MULTIPLIER = 2.0 # How much faster the boost makes the player
 const BOOST_DURATION = 0.2   # How long the boost lasts in seconds
 const BOOST_COOLDOWN = 0.5   # How long before boost can be used again
+@export var player_index: int = 0 # Assign this when instantiating the player
 
 @export var held_item : Node3D = null
 @export var held_item_ingredient_name : String
@@ -15,6 +16,8 @@ const BOOST_COOLDOWN = 0.5   # How long before boost can be used again
 
 # List to track nearby pickup objects
 var nearby_pickups: Array[PickupObject] = []
+# List to track nearby countertop objects
+var nearby_ingredients_countertop: Array = []
 # Reference to the currently highlighted object
 var currently_highlighted_pickup: PickupObject = null
 
@@ -41,7 +44,7 @@ func _ready():
 		printerr("Player: InteractionArea node not found!")
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("exit"):
+	if player_index == 0 and event.is_action_pressed("exit"):
 		get_tree().quit()
 
 	# --- Debug Controls ---
@@ -83,12 +86,11 @@ func _input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	# DEBUG: Check held_item at the start of _process
 	# print("Start _process - held_item: ", held_item)
-
 	var interaction_handled_this_frame = false
 	var currently_facing_countertop = get_facing_countertop()
 
 	# --- Handle Interact Input --- 
-	if Input.is_action_just_pressed("interact"):
+	if Input.is_action_just_pressed("interact_p%d" % player_index):
 		# Priority 1: Interact with countertop/bin if facing one
 		if currently_facing_countertop:
 			# Check if it's an ingredient bin and player is empty-handed
@@ -123,7 +125,14 @@ func _process(_delta: float) -> void:
 			if currently_highlighted_pickup.has_method("get_picked_up"):
 				currently_highlighted_pickup.get_picked_up(self)
 				interaction_handled_this_frame = true # Mark interaction as handled
-
+	for ingredient in nearby_ingredients_countertop:
+			
+		if ingredient.can_be_processed and ingredient.current_state == IngredientBase.State.WHOLE and ingredient.on_chopping_board:
+			if Input.is_action_pressed("chop_p%d" % player_index):#
+				if not ingredient._is_processing_internal:
+					ingredient.start_processing()
+			elif Input.is_action_just_released("chop_p%d" % player_index):
+				ingredient.stop_processing()
 	# --- End Handle Interact Input ---
 
 
@@ -138,16 +147,20 @@ func _physics_process(delta: float) -> void:
 
 	# --- Handle Boost Input ---
 	# Check if boost can be activated (not already boosting, cooldown finished, moving)
-	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-	if Input.is_action_just_pressed("boost") and not is_boosting and boost_cooldown_timer <= 0 and input_dir.length_squared() > 0.1:
+	var input_dir := Input.get_vector(
+		"move_left_p%d" % player_index, 
+		"move_right_p%d" % player_index, 
+		"move_forward_p%d" % player_index, 
+		"move_backward_p%d" % player_index
+		)
+	if Input.is_action_just_pressed("boost_p%d" % player_index) and not is_boosting and boost_cooldown_timer <= 0 and input_dir.length_squared() > 0.1:
 		is_boosting = true
 		boost_timer = BOOST_DURATION
 		boost_cooldown_timer = BOOST_COOLDOWN
 
-	if is_multiplayer_authority():
-		# Add the gravity.
-		if not is_on_floor():
-			velocity += get_gravity() * delta
+	# Add the gravity.
+	if not is_on_floor():
+		velocity += get_gravity() * delta
 
 	# Update pickup highlighting (still needed)
 	_update_pickup_highlight()
@@ -181,6 +194,9 @@ func _on_interaction_area_body_entered(body: Node3D):
 	# Check if the body is a PickupObject and not already in the list
 	if body is PickupObject and not nearby_pickups.has(body):
 		nearby_pickups.append(body)
+	var ingredient_script_node = body.find_child("Ingredient Script Holder", true, false)
+	if ingredient_script_node and ingredient_script_node is IngredientBase and not nearby_ingredients_countertop.has(ingredient_script_node):
+		nearby_ingredients_countertop.append(ingredient_script_node)
 
 func _on_interaction_area_body_exited(body: Node3D):
 	# Remove the body if it's a PickupObject
@@ -199,7 +215,10 @@ func _on_interaction_area_body_exited(body: Node3D):
 					currently_highlighted_pickup.disable_highlight()
 					
 			currently_highlighted_pickup = null
-
+	var ingredient_script_node = body.find_child("Ingredient Script Holder", true, false)
+	if ingredient_script_node and ingredient_script_node is IngredientBase:
+		nearby_ingredients_countertop.erase(ingredient_script_node)
+		
 func _update_pickup_highlight():
 	var closest_pickup: PickupObject = null
 	var min_dist_sq = INF
@@ -306,7 +325,13 @@ func _remove_placement_preview():
 		preview_instance = null
 
 func _handle_movement() -> void:
-	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	# Per-player input
+	var input_dir := Input.get_vector(
+		"move_left_p%d" % player_index, 
+		"move_right_p%d" % player_index, 
+		"move_forward_p%d" % player_index, 
+		"move_backward_p%d" % player_index
+		)
 	var direction := Vector3(input_dir.x, 0, input_dir.y).normalized()
 
 	# Determine current speed based on boost state
@@ -332,6 +357,11 @@ func is_facing_target(target_node: Node3D, max_angle_degrees := 60.0) -> bool:
 	return angle < max_angle_degrees
 
 func pick_up_item(item_node: PickupObject): # Changed type hint
+	var parent = get_parent()
+	for child in parent.get_children():
+		if child != self and child is CharacterBody3D and child.has_method("clear_held_item_if_matches"):
+			child.clear_held_item_if_matches(item_node)
+	
 	if held_item == null:
 		held_item = item_node
 		# DEBUG: Check held_item immediately after assignment
@@ -357,6 +387,10 @@ func pick_up_item(item_node: PickupObject): # Changed type hint
 				item_node.remove_from_countertop()
 
 		print("player is holding: " + held_item.name)
+
+func clear_held_item_if_matches(item_node):
+	if held_item == item_node:
+		held_item = null
 
 func attach_item_to_hand(item_node):
 	item_node.reparent(hold_position)

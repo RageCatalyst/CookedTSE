@@ -1,12 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://n14oq1723pyp"]
+[gd_scene load_steps=9 format=3 uid="uid://n14oq1723pyp"]
 
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
-[ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
 [ext_resource type="PackedScene" uid="uid://dxw7cledbpiia" path="res://addons/proto-csgs/proto_csg_box_3d.tscn" id="6_6bp64"]
 [ext_resource type="PackedScene" uid="uid://db8uogurso5wk" path="res://Scenes/countertop.tscn" id="7_6bp64"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="7_344ge"]
-[ext_resource type="Script" uid="uid://dydt7ksyxha0e" path="res://Scenes/timer.gd" id="8_754fn"]
+[ext_resource type="Script" path="res://Scenes/timer.gd" id="8_754fn"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ynf5e"]
 resource_local_to_scene = true
@@ -20,9 +19,6 @@ data = PackedVector3Array(-22.0833, -6.90035, 12.0767, -22.0833, 6.90035, -12.07
 [node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" parent="." instance=ExtResource("1_bdal3")]
-
-[node name="Player" parent="." instance=ExtResource("4_0txjt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.59015, 0)
 
 [node name="CameraContainer" parent="." instance=ExtResource("5_2xg1d")]
 transform = Transform3D(1, 0, 0, 0, 0.999966, 0.00825533, 0, -0.00825533, 0.999966, 0, 13.2422, 11.439)
@@ -42,7 +38,7 @@ transform = Transform3D(0.643087, 0, 0, 0, 0.643087, 0, 0, 0, 0.643087, 0.500619
 shape = SubResource("ConcavePolygonShape3D_6bp64")
 
 [node name="Level" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.69707, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.69707, 0, -0.626562)
 
 [node name="countertop" parent="Level" instance=ExtResource("7_6bp64")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.0118, 0.231706, -7.61185)

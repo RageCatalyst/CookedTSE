@@ -34,6 +34,7 @@ var on_chopping_board: bool = false # Renamed from on_required_tool
 
 
 func _ready():
+	set_process(true)
 	current_state = initial_state
 	_setup_labels()
 	update_visuals()
@@ -52,7 +53,7 @@ func _setup_labels():
 		printerr("Failed to create interact_label instance!")
 		return # Stop if creation failed
 
-	interact_label.text = "Hold 'F' to Process" # Generic text, can be overridden
+	interact_label.text = "Hold 'F'/'Y' to Process" # Generic text, can be overridden
 	interact_label.visible = false
 	interact_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	# Position slightly above the ingredient - will be set in _process
@@ -75,22 +76,6 @@ func _setup_labels():
 	#print("Adding progress_label as child...")
 	add_child(progress_label)
 	#print("progress_label added. Parent: ", progress_label.get_parent())
-
-
-func _input(event):
-	# Start/Stop Processing
-	# Only allow processing if:
-	# - Player can interact (is close/highlighting)
-	# - Ingredient can be processed
-	# - Ingredient is whole
-	# - Ingredient is on a chopping board
-	if _player_can_interact and can_be_processed and current_state == State.WHOLE and on_chopping_board:
-		if event.is_action_pressed("chop") and not _is_processing_internal: # Using "chop" action for now
-			start_processing()
-		elif event.is_action_released("chop") and _is_processing_internal:
-			stop_processing()
-
-
 
 func _process(delta):
 	# Ensure node is in the tree before accessing global_transform or updating labels
