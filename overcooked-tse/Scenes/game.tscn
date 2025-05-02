@@ -12,32 +12,3 @@ script = ExtResource("1_l7dgi")
 _spawnable_scenes = PackedStringArray("uid://bd6ae1vio0ubo")
 spawn_path = NodePath("..")
 spawn_limit = 1
-
-[node name="UI" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 35.0
-offset_top = 6.0
-offset_right = 75.0
-offset_bottom = 46.0
-
-[node name="Net" type="VBoxContainer" parent="UI"]
-layout_mode = 0
-offset_left = -29.0
-offset_right = 189.0
-offset_bottom = 40.0
-
-[node name="Options" type="HBoxContainer" parent="UI/Net"]
-layout_mode = 2
-
-[node name="Add Player" type="Button" parent="UI/Net/Options"]
-layout_mode = 2
-text = "Add Player
-"
-
-[node name="Remove Player" type="Button" parent="UI/Net/Options"]
-layout_mode = 2
-text = "Remove Player"
-
-[connection signal="pressed" from="UI/Net/Options/Add Player" to="." method="_on_add_player_pressed"]
-[connection signal="pressed" from="UI/Net/Options/Remove Player" to="." method="_on_remove_player"]
