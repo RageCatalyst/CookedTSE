@@ -15,6 +15,10 @@ run/main_scene="uid://cmosvqv8um3ac"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+ScoreTracker="*res://Scenes/score_tracker.gd"
+
 [filesystem]
 
 import/blender/enabled=false

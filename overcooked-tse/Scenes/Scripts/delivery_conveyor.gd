@@ -3,12 +3,13 @@ extends Node3D
 # List of currently required orders (group names)
 # Example: Start with one of each soup needed
 
-@export var orders_manager: HBoxContainer = null # Reference to the OrdersManager node
+@export var orders_manager: HBoxContainer = null# Reference to the OrdersManager node
 @export var orders: Array[String]
 
 func ready():
-	orders_manager = get_node_or_null("/root/Multiplayer/Level/CanvasLayer/UIRoot/HBoxContainer") # Adjust path as needed
 	
+	orders_manager = get_node_or_null("/root/Multiplayer/Level/CanvasLayer/UIRoot/HBoxContainer") # Adjust path as needed
+	print("Ordersmanger auto-find result", orders_manager != null)
 func _process(_delta: float) -> void:
 	# Update the UI with current orders
 	if orders_manager:
@@ -30,8 +31,15 @@ func interact(player):
 	for i in range(orders.size() - 1, -1, -1): # Iterate backwards for safe removal
 		var required_group = orders[i]
 		if held_item.is_in_group(required_group):
-			# Order found! Remove it from the list
 			orders.remove_at(i)
+			print("attempting to notify ordersmanager")
+			if orders_manager:
+				if orders_manager.has_method("_on_order_completed"):
+					orders_manager._on_order_completed(held_item)
+				else:
+					printerr("ordersmanager missing on order completed method")
+			else:
+				printerr("Ordersmanager reference missingd")
 			print("Delivered: ", required_group)
 			print("Remaining orders: ", orders)
 
