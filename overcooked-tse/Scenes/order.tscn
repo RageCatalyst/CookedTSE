@@ -1,0 +1,62 @@
+[gd_scene load_steps=5 format=3 uid="uid://bme8a3a2ws61"]
+
+[ext_resource type="Script" path="res://Scenes/order.gd" id="1_vwbfx"]
+[ext_resource type="Texture2D" uid="uid://djcn40h0d6261" path="res://onion.jpeg" id="2_xeqm4"]
+[ext_resource type="Texture2D" uid="uid://cktpvc8foytsy" path="res://onion soup.jpeg" id="3_fnvfm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_70v6w"]
+bg_color = Color(0.0823529, 0.333333, 0.0862745, 1)
+
+[node name="Order" type="Panel"]
+custom_minimum_size = Vector2(270, 45)
+offset_right = 270.0
+offset_bottom = 65.0
+script = ExtResource("1_vwbfx")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 268.0
+offset_bottom = 78.0
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer"]
+custom_minimum_size = Vector2(200, 10)
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_70v6w")
+value = 100.0
+rounded = true
+show_percentage = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Ingredient1" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_xeqm4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Ingredient2" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("2_xeqm4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Ingredient3" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("2_xeqm4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FinalDish" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("3_fnvfm")
+expand_mode = 1
+stretch_mode = 5
