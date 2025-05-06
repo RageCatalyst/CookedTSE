@@ -1,0 +1,57 @@
+[gd_scene load_steps=10 format=3 uid="uid://bd6ae1vio0ubo"]
+
+[ext_resource type="Script" uid="uid://bqx1m85gdvgw2" path="res://Scenes/Scripts/player.gd" id="1_b71vn"]
+[ext_resource type="PackedScene" uid="uid://dilcl7aco8lba" path="res://addons/proto-csgs/proto_csg_cylinder_3d.tscn" id="2_v3dgr"]
+[ext_resource type="PackedScene" uid="uid://dxw7cledbpiia" path="res://addons/proto-csgs/proto_csg_box_3d.tscn" id="4_5ixxa"]
+[ext_resource type="Texture2D" uid="uid://cqk4iys3i4lam" path="res://addons/proto-csgs/textures/red/texture_01.png" id="4_ugi7s"]
+[ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="5_nn08x"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3i4r6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8ouen"]
+resource_local_to_scene = true
+albedo_texture = ExtResource("4_ugi7s")
+uv1_offset = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_52ee3"]
+resource_local_to_scene = true
+albedo_texture = ExtResource("5_nn08x")
+uv1_offset = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5ixxa"]
+size = Vector3(1.23654, 2.23962, 2.75195)
+
+[node name="CharacterBody3D" type="CharacterBody3D" groups=["player"]]
+script = ExtResource("1_b71vn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_3i4r6")
+
+[node name="ProtoCSGCylinder3D" parent="." instance=ExtResource("2_v3dgr")]
+use_collision = false
+sides = 20
+material = SubResource("StandardMaterial3D_8ouen")
+
+[node name="HoldPosition" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.000934005, -0.149024, -0.789007)
+
+[node name="PlacementPreview" type="Node3D" parent="."]
+
+[node name="ProtoCSGBox3D" parent="." instance=ExtResource("4_5ixxa")]
+transform = Transform3D(-4.37044e-08, -0.0178538, 0.999841, -7.80413e-10, 0.999841, 0.0178538, -1, 0, -4.37114e-08, 0.00517102, 0.571996, -0.481125)
+use_collision = false
+size = Vector3(0.225616, 0.161804, 0.721802)
+material = SubResource("StandardMaterial3D_52ee3")
+
+[node name="CountertopRaycast" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+target_position = Vector3(0, 0, -2)
+
+[node name="InteractionArea" type="Area3D" parent="."]
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00315857, 0.112976, -0.875977)
+shape = SubResource("BoxShape3D_5ixxa")

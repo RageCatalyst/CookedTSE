@@ -41,6 +41,3 @@ func _on_order_completed(order: Node):
 			_score_tracker.curent_combo,
 			min(_score_tracker.current_combo, 4)
 		)
-	
-func remove_order():
-	orders.remove_at(0)

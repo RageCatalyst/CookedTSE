@@ -1,41 +1,23 @@
 [gd_scene load_steps=12 format=3 uid="uid://db8uogurso5wk"]
 
-[ext_resource type="Script" uid="uid://byhumq33ut6tq" path="res://Scenes/Scripts/delivery_conveyor.gd" id="7_dg1n2"]
-
-[sub_resource type="Resource" id="Resource_76v0i"]
-metadata/__load_path__ = "res://Scenes/Scripts/countertop.gd"
-
-[sub_resource type="Resource" id="Resource_7i1xd"]
-metadata/__load_path__ = "res://Models/Homemade/Countertop.glb"
+[ext_resource type="Script" uid="uid://bmjajaiytj46y" path="res://Scenes/Scripts/countertop.gd" id="1_eqru6"]
+[ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
+[ext_resource type="Script" uid="uid://cltira21wj7wr" path="res://Scenes/Scripts/stove.gd" id="5_vimie"]
+[ext_resource type="PackedScene" uid="uid://c0rlb2qmms42a" path="res://Scenes/Food/onion soup.tscn" id="6_fnohm"]
+[ext_resource type="Script" uid="uid://de57b3wp0vysl" path="res://Scenes/Scripts/delivery_conveyor.gd" id="7_dg1n2"]
+[ext_resource type="PackedScene" uid="uid://du22x0mclk4ae" path="res://Models/Homemade/delivery_conveyer.glb" id="7_fnohm"]
+[ext_resource type="Script" uid="uid://mt8whwmecxh" path="res://Scenes/Scripts/ingredient_bin.gd" id="9_dg1n2"]
+[ext_resource type="PackedScene" uid="uid://dl5fni8idvewg" path="res://Models/Homemade/chopping board.glb" id="10_bycu8"]
+[ext_resource type="PackedScene" uid="uid://f4js22abfpyc" path="res://Models/Homemade/stove.glb" id="10_dg1n2"]
+[ext_resource type="PackedScene" uid="uid://ch3rr02udfq4f" path="res://Models/Homemade/ingredient bin.glb" id="10_e7yjs"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wxj5o"]
 size = Vector3(1.99641, 2.12494, 2.00485)
 
-[sub_resource type="Resource" id="Resource_o3hr2"]
-metadata/__load_path__ = "res://Models/Homemade/chopping board.glb"
-
-[sub_resource type="Resource" id="Resource_6qt3v"]
-metadata/__load_path__ = "res://Scenes/Scripts/stove.gd"
-
-[sub_resource type="Resource" id="Resource_pe3oq"]
-metadata/__load_path__ = "res://Scenes/Food/onion soup.tscn"
-
-[sub_resource type="Resource" id="Resource_rvg4k"]
-metadata/__load_path__ = "res://Models/Homemade/stove.glb"
-
-[sub_resource type="Resource" id="Resource_b2fvh"]
-metadata/__load_path__ = "res://Models/Homemade/delivery_conveyer.glb"
-
-[sub_resource type="Resource" id="Resource_vimie"]
-metadata/__load_path__ = "res://Scenes/Scripts/ingredient_bin.gd"
-
-[sub_resource type="Resource" id="Resource_fnohm"]
-metadata/__load_path__ = "res://Models/Homemade/ingredient bin.glb"
-
 [node name="countertop" type="Node3D" groups=["countertops"]]
-script = SubResource("Resource_76v0i")
+script = ExtResource("1_eqru6")
 
-[node name="Countertop" parent="."]
+[node name="Countertop" parent="." instance=ExtResource("1_wxj5o")]
 transform = Transform3D(0.665, 0, 0, 0, 0.665, 0, 0, 0, 0.665, 0, 0.662647, 0)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Countertop" groups=["countertops"]]
@@ -47,7 +29,7 @@ shape = SubResource("BoxShape3D_wxj5o")
 [node name="SnapPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65052, 0)
 
-[node name="chopping board" parent="." groups=["chopping_boards"]]
+[node name="chopping board" parent="." groups=["chopping_boards"] instance=ExtResource("10_bycu8")]
 transform = Transform3D(0.57, 0, 0, 0, 0.57, 0, 0, 0, 0.57, 0, 1.429, 0)
 visible = false
 
@@ -56,10 +38,10 @@ transform = Transform3D(1.75439, 0, 0, 0, 1.75439, 0, 0, 0, 1.75439, 0, -2.50702
 
 [node name="stove" type="Node3D" parent="." groups=["stoves"]]
 visible = false
-script = SubResource("Resource_6qt3v")
-onion_soup_scene = SubResource("Resource_pe3oq")
+script = ExtResource("5_vimie")
+onion_soup_scene = ExtResource("6_fnohm")
 
-[node name="stovetop node" parent="stove"]
+[node name="stovetop node" parent="stove" instance=ExtResource("10_dg1n2")]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 1.41, 0)
 
 [node name="ProgressLabel" type="Label3D" parent="stove"]
@@ -72,14 +54,12 @@ visible = false
 script = ExtResource("7_dg1n2")
 orders = Array[String](["onion soup"])
 
-[node name="delivery_conveyer_kmodel" parent="delivery_conveyor"]
+[node name="delivery_conveyer_kmodel" parent="delivery_conveyor" instance=ExtResource("7_fnohm")]
 transform = Transform3D(0.605, 0, 0, 0, 0.605, 0, 0, 0, 0.605, 0, 1.39885, 0)
 
 [node name="ingredient_bin" type="Node3D" parent="." groups=["ingredient_bins"]]
 visible = false
-script = SubResource("Resource_vimie")
+script = ExtResource("9_dg1n2")
 
-[node name="ingredient bin model node" parent="ingredient_bin"]
+[node name="ingredient bin model node" parent="ingredient_bin" instance=ExtResource("10_e7yjs")]
 transform = Transform3D(-0.53, 0, 4.63341e-08, 0, 0.53, 0, -4.63341e-08, 0, -0.53, 0, 1.42946, 0)
-
-[connection signal="order_delivered" from="delivery_conveyor" to="delivery_conveyor" method="_on_order_delivered"]
