@@ -12,7 +12,8 @@ signal order_delivered()
 
 func _ready():
 	print("Getting manager")
-	orders_manager = $"../../../CanvasLayer/UIRoot/HBoxContainer"# Adjust path as needed
+	orders_manager = $"Level/CanvasLayer/UIRoot/HBoxContainer"# Adjust path as needed
+	#connect("order_delivered", orders_manager.remove_order())
 	
 func _process(_delta: float) -> void:
 	# Update the UI with current orders
@@ -39,8 +40,8 @@ func interact(player):
 			# Order found! Remove it from the list
 			orders.remove_at(i)
 			print("Delivered: ", required_group)
-			orders_manager.get_child(0).queue_free()
-			#order_delivered.emit("onion soup")
+			#orders_manager.get_child(0).queue_free()
+			order_delivered.emit("onion soup")
 			print("Remaining orders: ", orders)
 
 			# Player successfully delivered, make them drop/destroy the item
