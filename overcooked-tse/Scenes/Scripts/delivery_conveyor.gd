@@ -3,17 +3,22 @@ extends Node3D
 # List of currently required orders (group names)
 # Example: Start with one of each soup needed
 
-@export var orders_manager: HBoxContainer = null# Reference to the OrdersManager node
+#@export var orders_manager: HBoxContainer = null # Reference to the OrdersManager node
 @export var orders: Array[String]
+@export var orders_manager: HBoxContainer
 
-func ready():
+signal order_delivered()
+
+
+func _ready():
+	print("Getting manager")
+	orders_manager = $"Level/CanvasLayer/UIRoot/HBoxContainer"# Adjust path as needed
+	#connect("order_delivered", orders_manager.remove_order())
 	
-	orders_manager = get_node_or_null("/root/Multiplayer/Level/CanvasLayer/UIRoot/HBoxContainer") # Adjust path as needed
-	print("Ordersmanger auto-find result", orders_manager != null)
 func _process(_delta: float) -> void:
 	# Update the UI with current orders
 	if orders_manager:
-		orders_manager.clear() # Clear previous orders
+		orders.clear() # Clear previous orders
 		for order in orders:
 			orders = orders_manager.orders
 
@@ -30,17 +35,13 @@ func interact(player):
 	# Check if the held item matches any required order group
 	for i in range(orders.size() - 1, -1, -1): # Iterate backwards for safe removal
 		var required_group = orders[i]
+		print(required_group)
 		if held_item.is_in_group(required_group):
+			# Order found! Remove it from the list
 			orders.remove_at(i)
-			print("attempting to notify ordersmanager")
-			if orders_manager:
-				if orders_manager.has_method("_on_order_completed"):
-					orders_manager._on_order_completed(held_item)
-				else:
-					printerr("ordersmanager missing on order completed method")
-			else:
-				printerr("Ordersmanager reference missingd")
 			print("Delivered: ", required_group)
+			#orders_manager.get_child(0).queue_free()
+			order_delivered.emit("onion soup")
 			print("Remaining orders: ", orders)
 
 			# Player successfully delivered, make them drop/destroy the item
@@ -70,3 +71,7 @@ func interact(player):
 # Helper function to potentially display orders in UI later
 func get_orders_as_strings() -> Array[String]:
 	return orders
+
+
+func _on_order_delivered() -> void:
+	pass # Replace with function body.
