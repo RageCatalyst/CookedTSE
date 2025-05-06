@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://54lbxx5mbfnf" path="res://Scenes/Scripts/pickup_object.gd" id="1_yec2b"]
 [ext_resource type="ArrayMesh" uid="uid://cumrxfnt6wdpc" path="res://Meshes/onion.mesh" id="2_fq617"]
-[ext_resource type="Script" uid="uid://cya31isrhpgv8" path="res://Scenes/Scripts/ingredient.gd" id="3_fq617"]
+[ext_resource type="Script" path="res://Scenes/Scripts/ingredient.gd" id="3_fq617"]
 [ext_resource type="ArrayMesh" uid="uid://bnqah73ej86e5" path="res://Meshes/chopped onion.mesh" id="4_8bh2q"]
 [ext_resource type="PackedScene" uid="uid://bpbe4daitnftg" path="res://Scenes/Food/chopped onion.tscn" id="4_xxxxx"]
 [ext_resource type="Material" uid="uid://b5m8x8o4jka2" path="res://Materials/onion_mat.tres" id="6_e258v"]

@@ -21,4 +21,6 @@ func spawn_order():
 	print("Spawned order: ", new_order)
 	
 func remove_order():
+	print("removing order")
 	orders.remove_at(0)
+	get_child(0).queue_free()

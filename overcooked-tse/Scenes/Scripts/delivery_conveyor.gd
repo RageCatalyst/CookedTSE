@@ -11,16 +11,14 @@ signal order_delivered()
 
 
 func _ready():
-	print("Getting manager")
-	orders_manager = $"Level/CanvasLayer/UIRoot/HBoxContainer"# Adjust path as needed
-	#connect("order_delivered", orders_manager.remove_order())
+	orders_manager = $"/root/Multiplayer/Level/CanvasLayer/UIRoot/HBoxContainer"# Adjust path as needed
+	print("ordersmanager found: ", orders_manager != null)
+	connect("order_delivered", Callable(orders_manager, "_on_remove_order"))
 	
 func _process(_delta: float) -> void:
 	# Update the UI with current orders
 	if orders_manager:
-		orders.clear() # Clear previous orders
-		for order in orders:
-			orders = orders_manager.orders
+		orders = orders_manager.orders
 
 # This function should be called by the player when they interact
 func interact(player):
@@ -32,6 +30,8 @@ func interact(player):
 	var held_item = player.held_item
 	var delivered = false
 
+	print("current orders: ", orders)
+
 	# Check if the held item matches any required order group
 	for i in range(orders.size() - 1, -1, -1): # Iterate backwards for safe removal
 		var required_group = orders[i]
@@ -41,7 +41,8 @@ func interact(player):
 			orders.remove_at(i)
 			print("Delivered: ", required_group)
 			#orders_manager.get_child(0).queue_free()
-			order_delivered.emit("onion soup")
+			#order_delivered.emit("onion soup")
+			orders_manager.remove_order()
 			print("Remaining orders: ", orders)
 
 			# Player successfully delivered, make them drop/destroy the item

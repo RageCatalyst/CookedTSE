@@ -7,8 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="7_344ge"]
 [ext_resource type="FontFile" uid="uid://di7id2uirl0sf" path="res://SUPER BOOM.otf" id="8_qxfql"]
 [ext_resource type="Script" path="res://Scenes/timer.gd" id="9_ha31o"]
-[ext_resource type="Script" path="res://Scenes/OrdersManager.gd" id="10_pa6b8"]
-[ext_resource type="PackedScene" uid="uid://8c6rc1qopkfl" path="res://Scenes/order.tscn" id="11_crh0w"]
+[ext_resource type="Script" uid="uid://ce52c767k0v" path="res://Scenes/OrdersManager.gd" id="10_pa6b8"]
+[ext_resource type="PackedScene" uid="uid://bme8a3a2ws61" path="res://Scenes/order.tscn" id="11_crh0w"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ynf5e"]
 resource_local_to_scene = true
