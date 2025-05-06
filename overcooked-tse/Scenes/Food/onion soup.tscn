@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://c0rlb2qmms42a"]
 
 [ext_resource type="Script" uid="uid://54lbxx5mbfnf" path="res://Scenes/Scripts/pickup_object.gd" id="1_tihtd"]
-[ext_resource type="Script" uid="uid://cya31isrhpgv8" path="res://Scenes/Scripts/ingredient.gd" id="2_ue26s"]
+[ext_resource type="Script" path="res://Scenes/Scripts/ingredient.gd" id="2_ue26s"]
 [ext_resource type="ArrayMesh" uid="uid://bjsybbx5qdn5e" path="res://Meshes/onion soup.mesh" id="5_ue26s"]
 [ext_resource type="Material" uid="uid://jxchis28o6y6" path="res://Materials/outline_shader_material.tres" id="6_v1501"]
 
