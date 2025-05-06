@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://b83igxijffe5"
-path="res://.godot/imported/Carrot.glb-e6b8aea26a73e23e7b150c0174593def.scn"
+uid="uid://cy0vbvps6doyh"
+path="res://.godot/imported/soup_onion.glb-9ddef24eb02a4b6127379d6078bef3c7.scn"
 
 [deps]
 
-source_file="res://Models/Carrot.glb"
-dest_files=["res://.godot/imported/Carrot.glb-e6b8aea26a73e23e7b150c0174593def.scn"]
+source_file="res://Models/Homemade/soup_onion.glb"
+dest_files=["res://.godot/imported/soup_onion.glb-9ddef24eb02a4b6127379d6078bef3c7.scn"]
 
 [params]
 

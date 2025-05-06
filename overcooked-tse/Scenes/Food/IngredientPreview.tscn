@@ -1,7 +1,12 @@
 [gd_scene load_steps=6 format=4 uid="uid://city3oyq3py2e"]
 
+<<<<<<< HEAD
 [sub_resource type="Resource" id="Resource_ciyeq"]
 metadata/__load_path__ = "res://Scenes/Scripts/placement_preview.gd"
+=======
+[ext_resource type="Script" uid="uid://c1x45hb1cm515" path="res://Scenes/Scripts/placement_preview.gd" id="1_c004o"]
+[ext_resource type="Material" uid="uid://be4oevvk3v82p" path="res://Materials/PreviewMaterial.tres" id="2_0uam6"]
+>>>>>>> parent of e17ae38 (Merge branch 'TavisTest' of https://github.com/RageCatalyst/CookedTSE into TavisTest)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tohn3"]
 resource_name = "Material.001"

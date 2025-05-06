@@ -2,7 +2,11 @@
 
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="1_7mmhk"]
 [ext_resource type="PackedScene" uid="uid://dk5sh57urmtdm" path="res://addons/proto-csgs/components/proto_csg_component.tscn" id="2_6prsk"]
+<<<<<<< HEAD
 [ext_resource type="Script" uid="uid://13a2n4embbiw" path="res://addons/proto-csgs/scripts/proto_csg_box_3d.gd" id="2_11dk5"]
+=======
+[ext_resource type="Script" uid="uid://d2en8ykrb2kug" path="res://addons/proto-csgs/scripts/proto_csg_box_3d.gd" id="2_11dk5"]
+>>>>>>> parent of e17ae38 (Merge branch 'TavisTest' of https://github.com/RageCatalyst/CookedTSE into TavisTest)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ixrb4"]
 resource_local_to_scene = true

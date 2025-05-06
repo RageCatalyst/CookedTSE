@@ -1,6 +1,6 @@
 @tool
 extends CSGBox3D
-class_name Countertop
+class_name ProtoCSGBox3D
 
 
 enum PROTOCSG_COLOR {DARK, GREEN, LIGHT, ORANGE, PURPLE, RED}
@@ -32,32 +32,8 @@ enum PROTOCSG_STYLE {
 		block_style = value
 		update_proto_texture()
 
-var placed_object: Node3D = null 
 
 @onready var proto_csg_component = $ProtoCSGComponent
-
-func can_place_object() -> bool:
-	var can_place = placed_object == null
-	print("can_place_object is returning: ",can_place, "placed_object is null", placed_object == null,")")
-	return placed_object == null
-
-func place_object(object: Node3D):
-	if can_place_object():
-		placed_object = object
-		object.reparent(self)
-		object.global_transform.origin = global_transform.origin + Vector3(0, 1, 0)  # Place slightly above
-		object.rotation_degrees = Vector3.ZERO  # Reset rotation
-		print("item placed on the countertop")
-	else:
-		print("cannot place item countertop is still full")
-		
-func remove_object() -> Node3D:
-	print("REMOVING OBJECT placed object = ", placed_object)
-	var obj = placed_object
-	placed_object = null
-	print("AFTER REMOVAL placed object = ", placed_object)
-	return obj
-
 
 
 func _ready() -> void:

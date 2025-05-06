@@ -1,6 +1,12 @@
 [gd_scene load_steps=7 format=3 uid="uid://bme8a3a2ws61"]
 
+<<<<<<< HEAD
 [ext_resource type="Script" uid="uid://dega585ppitah" path="res://Scenes/order.gd" id="1_vwbfx"]
+=======
+[ext_resource type="Script" uid="uid://cvltg03mwdlkv" path="res://Scenes/order.gd" id="1_vwbfx"]
+[ext_resource type="Texture2D" uid="uid://djcn40h0d6261" path="res://onion.jpeg" id="2_xeqm4"]
+[ext_resource type="Texture2D" uid="uid://cktpvc8foytsy" path="res://onion soup.jpeg" id="3_fnvfm"]
+>>>>>>> parent of e17ae38 (Merge branch 'TavisTest' of https://github.com/RageCatalyst/CookedTSE into TavisTest)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_70v6w"]
 bg_color = Color(0.0823529, 0.333333, 0.0862745, 1)
