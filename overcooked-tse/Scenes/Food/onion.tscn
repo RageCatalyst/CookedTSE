@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Scenes/Scripts/ingredient.gd" id="3_fq617"]
 [ext_resource type="ArrayMesh" uid="uid://bnqah73ej86e5" path="res://Meshes/chopped onion.mesh" id="4_8bh2q"]
 [ext_resource type="PackedScene" uid="uid://bpbe4daitnftg" path="res://Scenes/Food/chopped onion.tscn" id="4_xxxxx"]
-[ext_resource type="Material" uid="uid://b5m8x8o4jka2" path="res://Materials/onion_mat.tres" id="6_e258v"]
+[ext_resource type="Material" path="res://Materials/onion_mat.tres" id="6_e258v"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_d4jta"]
 radius = 0.494871

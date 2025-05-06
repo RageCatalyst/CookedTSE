@@ -34,3 +34,22 @@ func start_shake():
 	tween.tween_property(self, "rotation_degrees", 5, 0.05)
 	tween.tween_property(self, "rotation_degrees", -5, 0.1)
 	tween.tween_property(self, "rotation_degrees", 0, 0.05)
+
+enum TimerState {GREEN, YELLOW, RED}
+var current_state = TimerState.GREEN
+
+func get_timer_state() -> TimerState:
+	if time_left > total_time * 0.6:
+		return TimerState.GREEN
+	elif time_left > total_time * 0.3:
+		return TimerState.YELLOW
+	else:
+		return TimerState.RED
+		
+func get_tip() -> int:
+	match get_timer_state():
+		TimerState.GREEN: return 8
+		TimerState.YELLOW: return 5
+		TimerState.RED: return 3
+		_: return 0
+	

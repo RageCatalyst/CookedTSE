@@ -1,0 +1,58 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3v6mt8dq0rk"]
+
+[ext_resource type="Script" uid="uid://cl8jdb8ggyo8" path="res://Scenes/score_display.gd" id="1_abl27"]
+
+[node name="ScoreDisplay" type="CanvasLayer"]
+script = ExtResource("1_abl27")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 594.0
+offset_right = 46.0
+offset_bottom = 634.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Score" type="HBoxContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScoreLabel" type="Label" parent="Control/VBoxContainer/Score"]
+layout_mode = 2
+text = "Score:"
+vertical_alignment = 1
+
+[node name="ScoreValue" type="Label" parent="Control/VBoxContainer/Score"]
+layout_mode = 2
+text = "0"
+vertical_alignment = 1
+
+[node name="Multiplier" type="HBoxContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="MultiplierLabel" type="Label" parent="Control/VBoxContainer/Multiplier"]
+layout_mode = 2
+text = "Multiplier:"
+vertical_alignment = 1
+
+[node name="MultiplierValue" type="Label" parent="Control/VBoxContainer/Multiplier"]
+layout_mode = 2
+text = "0"
+vertical_alignment = 1
+
+[node name="Combo" type="HBoxContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="ComboLabel" type="Label" parent="Control/VBoxContainer/Combo"]
+layout_mode = 2
+text = "Combo:"
+vertical_alignment = 1
+
+[node name="ComboValue" type="Label" parent="Control/VBoxContainer/Combo"]
+layout_mode = 2
+text = "0"
+vertical_alignment = 1
