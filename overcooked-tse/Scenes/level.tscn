@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c1ft1v2yo8q0a"]
+[gd_scene load_steps=13 format=3 uid="uid://c1ft1v2yo8q0a"]
 
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
@@ -6,9 +6,10 @@
 [ext_resource type="PackedScene" uid="uid://db8uogurso5wk" path="res://Scenes/countertop.tscn" id="7_6bp64"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="7_344ge"]
 [ext_resource type="FontFile" uid="uid://di7id2uirl0sf" path="res://SUPER BOOM.otf" id="8_qxfql"]
-[ext_resource type="Script" path="res://Scenes/timer.gd" id="9_ha31o"]
-[ext_resource type="Script" path="res://Scenes/OrdersManager.gd" id="10_pa6b8"]
-[ext_resource type="PackedScene" uid="uid://8c6rc1qopkfl" path="res://Scenes/order.tscn" id="11_crh0w"]
+[ext_resource type="Script" uid="uid://dydt7ksyxha0e" path="res://Scenes/timer.gd" id="9_ha31o"]
+[ext_resource type="PackedScene" uid="uid://b3v6mt8dq0rk" path="res://Scenes/score_display.tscn" id="10_oqgf2"]
+[ext_resource type="Script" uid="uid://ce52c767k0v" path="res://Scenes/OrdersManager.gd" id="10_pa6b8"]
+[ext_resource type="PackedScene" uid="uid://bme8a3a2ws61" path="res://Scenes/order.tscn" id="11_crh0w"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ynf5e"]
 resource_local_to_scene = true
@@ -232,3 +233,5 @@ theme_override_constants/separation = 100
 script = ExtResource("10_pa6b8")
 order_scene = ExtResource("11_crh0w")
 metadata/_edit_use_anchors_ = true
+
+[node name="ScoreDisplay" parent="CanvasLayer/UIRoot" instance=ExtResource("10_oqgf2")]
