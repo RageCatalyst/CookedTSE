@@ -1,12 +1,12 @@
 [gd_scene load_steps=12 format=3 uid="uid://db8uogurso5wk"]
 
-[ext_resource type="Script" uid="uid://bmjajaiytj46y" path="res://Scenes/Scripts/countertop.gd" id="1_eqru6"]
+[ext_resource type="Script" path="res://Scenes/Scripts/countertop.gd" id="1_eqru6"]
 [ext_resource type="PackedScene" uid="uid://lbx7q4dmc1v8" path="res://Models/Homemade/Countertop.glb" id="1_wxj5o"]
-[ext_resource type="Script" uid="uid://cltira21wj7wr" path="res://Scenes/Scripts/stove.gd" id="5_vimie"]
+[ext_resource type="Script" path="res://Scenes/Scripts/stove.gd" id="5_vimie"]
 [ext_resource type="PackedScene" uid="uid://c0rlb2qmms42a" path="res://Scenes/Food/onion soup.tscn" id="6_fnohm"]
 [ext_resource type="Script" uid="uid://de57b3wp0vysl" path="res://Scenes/Scripts/delivery_conveyor.gd" id="7_dg1n2"]
 [ext_resource type="PackedScene" uid="uid://du22x0mclk4ae" path="res://Models/Homemade/delivery_conveyer.glb" id="7_fnohm"]
-[ext_resource type="Script" uid="uid://mt8whwmecxh" path="res://Scenes/Scripts/ingredient_bin.gd" id="9_dg1n2"]
+[ext_resource type="Script" path="res://Scenes/Scripts/ingredient_bin.gd" id="9_dg1n2"]
 [ext_resource type="PackedScene" uid="uid://dl5fni8idvewg" path="res://Models/Homemade/chopping board.glb" id="10_bycu8"]
 [ext_resource type="PackedScene" uid="uid://f4js22abfpyc" path="res://Models/Homemade/stove.glb" id="10_dg1n2"]
 [ext_resource type="PackedScene" uid="uid://ch3rr02udfq4f" path="res://Models/Homemade/ingredient bin.glb" id="10_e7yjs"]
@@ -63,3 +63,5 @@ script = ExtResource("9_dg1n2")
 
 [node name="ingredient bin model node" parent="ingredient_bin" instance=ExtResource("10_e7yjs")]
 transform = Transform3D(-0.53, 0, 4.63341e-08, 0, 0.53, 0, -4.63341e-08, 0, -0.53, 0, 1.42946, 0)
+
+[connection signal="order_delivered" from="delivery_conveyor" to="delivery_conveyor" method="_on_order_delivered"]

@@ -19,3 +19,6 @@ func spawn_order():
 	orders.append("onion soup")
 	add_child(new_order)
 	print("Spawned order: ", new_order)
+	
+func remove_order():
+	orders.remove_at(0)
