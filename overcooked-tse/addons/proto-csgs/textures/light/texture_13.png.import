@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cmuv3ve5x2al8"
-path.s3tc="res://.godot/imported/texture_13.png-8bf332805284bfd3a775d2d4550db42c.s3tc.ctex"
+path="res://.godot/imported/texture_13.png-8bf332805284bfd3a775d2d4550db42c.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://addons/proto-csgs/textures/light/texture_13.png"
-dest_files=["res://.godot/imported/texture_13.png-8bf332805284bfd3a775d2d4550db42c.s3tc.ctex"]
+dest_files=["res://.godot/imported/texture_13.png-8bf332805284bfd3a775d2d4550db42c.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=3
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
@@ -32,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

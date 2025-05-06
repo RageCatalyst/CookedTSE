@@ -1,13 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://ch58623iyepdy"]
-
-[sub_resource type="Environment" id="Environment_xk6ql"]
-glow_enabled = true
-glow_intensity = 1.42
-glow_strength = 0.49
-glow_blend_mode = 0
+[gd_scene format=3 uid="uid://ch58623iyepdy"]
 
 [node name="WorldEnvironment" type="WorldEnvironment"]
-environment = SubResource("Environment_xk6ql")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.332046, -0.603045, 0.725315, 1.05017e-08, 0.768942, 0.639318, -0.943263, 0.212283, -0.255324, 0, 0, 0)

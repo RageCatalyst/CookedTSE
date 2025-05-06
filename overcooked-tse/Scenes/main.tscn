@@ -1,0 +1,99 @@
+[gd_scene load_steps=14 format=3 uid="uid://d0axgqh8dyxum"]
+
+[ext_resource type="Texture2D" uid="uid://cd3fcinti1un5" path="res://addons/proto-csgs/textures/dark/texture_01.png" id="1_85evx"]
+[ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
+[ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
+[ext_resource type="Script" path="res://addons/proto-csgs/scripts/proto_csg_box_3d.gd" id="4_sc7ri"]
+[ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
+[ext_resource type="PackedScene" uid="uid://xjk1yyq6pmsf" path="res://Scenes/pickup_object.tscn" id="6_g51fe"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_06ja8"]
+albedo_texture = ExtResource("1_85evx")
+uv1_scale = Vector3(30.59, 30.59, 30.59)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bjctr"]
+material = SubResource("StandardMaterial3D_06ja8")
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ljgql"]
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_emyc1"]
+size = Vector3(8.59, 1, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_2lim3"]
+radius = 1.21283
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u4ica"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bg4rk"]
+size = Vector3(2, 2, 2)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" parent="." instance=ExtResource("1_bdal3")]
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.555, 0, 0, 0, 1.555, 0, 0, 0, 1.555, 0, -0.25, 0)
+mesh = SubResource("BoxMesh_bjctr")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/StaticBody3D"]
+shape = SubResource("BoxShape3D_ljgql")
+
+[node name="Bounding Walls" type="Node3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Ground/Bounding Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.333123, 2.38419e-07, -4.49676)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/Bounding Walls/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.29833, 0, 0)
+shape = SubResource("BoxShape3D_emyc1")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="Ground/Bounding Walls"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/Bounding Walls/StaticBody3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.50318)
+shape = SubResource("BoxShape3D_emyc1")
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="Ground/Bounding Walls"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/Bounding Walls/StaticBody3D3"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 4.53587, 0, 0)
+shape = SubResource("BoxShape3D_emyc1")
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="Ground/Bounding Walls"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/Bounding Walls/StaticBody3D4"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -4.50334, 0, 0.0266018)
+shape = SubResource("BoxShape3D_emyc1")
+
+[node name="CharacterBody3D" parent="." instance=ExtResource("4_0txjt")]
+
+[node name="InteractionArea" type="Area3D" parent="CharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D/InteractionArea"]
+shape = SubResource("SphereShape3D_2lim3")
+
+[node name="CameraContainer" parent="." node_paths=PackedStringArray("player") instance=ExtResource("5_2xg1d")]
+_camera_offset = Vector3(0, 7, 5)
+player = NodePath("../CharacterBody3D")
+
+[node name="PickupObject" parent="." instance=ExtResource("6_g51fe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.95647, 0.729791, -3.427)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6686, 0.624062, 2.26911)
+script = ExtResource("4_sc7ri")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D" groups=["Countertop"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D" groups=["Countertop"]]
+shape = SubResource("BoxShape3D_u4ica")
+
+[node name="interaction area" type="Area3D" parent="CSGBox3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/interaction area"]
+shape = SubResource("BoxShape3D_bg4rk")
