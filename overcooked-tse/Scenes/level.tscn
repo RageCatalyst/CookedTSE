@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://db8uogurso5wk" path="res://Scenes/countertop.tscn" id="7_6bp64"]
 [ext_resource type="Texture2D" uid="uid://cej3yoosomfd2" path="res://addons/proto-csgs/textures/dark/texture_13.png" id="7_344ge"]
 [ext_resource type="FontFile" uid="uid://di7id2uirl0sf" path="res://SUPER BOOM.otf" id="8_qxfql"]
-[ext_resource type="Script" uid="uid://dydt7ksyxha0e" path="res://Scenes/timer.gd" id="9_ha31o"]
+[ext_resource type="Script" path="res://Scenes/timer.gd" id="9_ha31o"]
 [ext_resource type="PackedScene" uid="uid://b3v6mt8dq0rk" path="res://Scenes/score_display.tscn" id="10_oqgf2"]
 [ext_resource type="Script" uid="uid://ce52c767k0v" path="res://Scenes/OrdersManager.gd" id="10_pa6b8"]
 [ext_resource type="Script" uid="uid://byryacrj7xa7g" path="res://Scenes/score_tracker.gd" id="10_qxfql"]
