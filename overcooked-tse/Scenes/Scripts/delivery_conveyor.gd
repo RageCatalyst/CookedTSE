@@ -45,6 +45,15 @@ func interact(player):
 			orders_manager.remove_order()
 			print("Remaining orders: ", orders)
 
+			var countertop = get_parent()
+			if countertop.has_method("remove_item"):
+				countertop.remove_item() # Remove the item from the countertop
+				held_item.queue_free() # Destroy the item
+				print("Item removed from countertop and destroyed.")
+			else:
+				print("Warning: Countertop script missing remove_item() method. Destroying item directly.")
+				held_item.queue_free()
+
 			# Player successfully delivered, make them drop/destroy the item
 			if player.has_method("drop_item"):
 				# We need to ensure the item is actually destroyed *after* this interaction
