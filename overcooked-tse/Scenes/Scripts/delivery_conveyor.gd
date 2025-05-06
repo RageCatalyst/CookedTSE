@@ -6,7 +6,6 @@ extends Node3D
 @export var orders_manager: HBoxContainer = null# Reference to the OrdersManager node
 #@export var orders_manager: HBoxContainer = null # Reference to the OrdersManager node
 @export var orders: Array[String]
-@export var orders_manager: HBoxContainer
 
 func ready():
 signal order_delivered()

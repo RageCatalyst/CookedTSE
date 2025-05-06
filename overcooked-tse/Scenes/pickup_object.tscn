@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://xjk1yyq6pmsf"]
 
-[ext_resource type="Script" path="res://Scenes/Scripts/pickup_object.gd" id="1_b0dvd"]
+[ext_resource type="Script" uid="uid://cqersk15o8tnj" path="res://Scenes/Scripts/pickup_object.gd" id="1_b0dvd"]
 [ext_resource type="PackedScene" uid="uid://b83igxijffe5" path="res://Models/Carrot.glb" id="2_3idsr"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_qscsc"]

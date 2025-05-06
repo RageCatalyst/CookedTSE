@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://cd3fcinti1un5" path="res://addons/proto-csgs/textures/dark/texture_01.png" id="1_85evx"]
 [ext_resource type="PackedScene" uid="uid://ch58623iyepdy" path="res://Scenes/world_environment.tscn" id="1_bdal3"]
 [ext_resource type="PackedScene" uid="uid://bd6ae1vio0ubo" path="res://Scenes/Player.tscn" id="4_0txjt"]
-[ext_resource type="Script" path="res://addons/proto-csgs/scripts/proto_csg_box_3d.gd" id="4_sc7ri"]
+[ext_resource type="Script" uid="uid://13a2n4embbiw" path="res://addons/proto-csgs/scripts/proto_csg_box_3d.gd" id="4_sc7ri"]
 [ext_resource type="PackedScene" uid="uid://d1b0drwy2b57t" path="res://Scenes/camera_container.tscn" id="5_2xg1d"]
 [ext_resource type="PackedScene" uid="uid://xjk1yyq6pmsf" path="res://Scenes/pickup_object.tscn" id="6_g51fe"]
 

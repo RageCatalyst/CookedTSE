@@ -1,14 +1,27 @@
-[gd_scene load_steps=9 format=3 uid="uid://cnniox8lkfqsr"]
+[gd_scene load_steps=10 format=3 uid="uid://cnniox8lkfqsr"]
 
-[ext_resource type="Script" uid="uid://54lbxx5mbfnf" path="res://Scenes/Scripts/pickup_object.gd" id="1_yec2b"]
-[ext_resource type="ArrayMesh" uid="uid://cumrxfnt6wdpc" path="res://Meshes/onion.mesh" id="2_fq617"]
-[ext_resource type="Script" uid="uid://cya31isrhpgv8" path="res://Scenes/Scripts/ingredient.gd" id="3_fq617"]
-[ext_resource type="ArrayMesh" uid="uid://bnqah73ej86e5" path="res://Meshes/chopped onion.mesh" id="4_8bh2q"]
-[ext_resource type="PackedScene" uid="uid://bpbe4daitnftg" path="res://Scenes/Food/chopped onion.tscn" id="4_xxxxx"]
-[ext_resource type="Material" uid="uid://b5m8x8o4jka2" path="res://Materials/onion_mat.tres" id="6_e258v"]
+[ext_resource type="Script" uid="uid://cqersk15o8tnj" path="res://Scenes/Scripts/pickup_object.gd" id="1_yec2b"]
+
+[sub_resource type="Resource" id="Resource_njak0"]
+metadata/__load_path__ = "res://Scenes/Scripts/ingredient.gd"
+
+[sub_resource type="Resource" id="Resource_d4jta"]
+metadata/__load_path__ = "res://Meshes/onion.mesh"
+
+[sub_resource type="Resource" id="Resource_fq617"]
+metadata/__load_path__ = "res://Meshes/chopped onion.mesh"
+
+[sub_resource type="Resource" id="Resource_kdmtd"]
+metadata/__load_path__ = "res://Scenes/Food/chopped onion.tscn"
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_d4jta"]
 radius = 0.494871
+
+[sub_resource type="Resource" id="Resource_8bh2q"]
+metadata/__load_path__ = "res://Meshes/onion.mesh"
+
+[sub_resource type="Resource" id="Resource_e258v"]
+metadata/__load_path__ = "res://Materials/onion_mat.tres"
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_njak0"]
 radius = 2.06045
@@ -20,10 +33,10 @@ item_name = "Onion"
 visual_mesh = NodePath("OnionMesh")
 
 [node name="Ingredient Script Holder" type="Node3D" parent="."]
-script = ExtResource("3_fq617")
-whole_mesh = ExtResource("2_fq617")
-processed_mesh = ExtResource("4_8bh2q")
-processed_scene = ExtResource("4_xxxxx")
+script = SubResource("Resource_njak0")
+whole_mesh = SubResource("Resource_d4jta")
+processed_mesh = SubResource("Resource_fq617")
+processed_scene = SubResource("Resource_kdmtd")
 mesh_node_path = NodePath("../OnionMesh")
 
 [node name="Pickup Label" type="Label3D" parent="."]
@@ -37,8 +50,8 @@ shape = SubResource("SphereShape3D_d4jta")
 
 [node name="OnionMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.445, 6.71931e-08, 0, -6.71931e-08, -0.445, 0, 0, 0, 0.445, 0, 0, 0)
-mesh = ExtResource("2_fq617")
-surface_material_override/0 = ExtResource("6_e258v")
+mesh = SubResource("Resource_8bh2q")
+surface_material_override/0 = SubResource("Resource_e258v")
 
 [node name="Area3D" type="Area3D" parent="."]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://bd6ae1vio0ubo"]
 
-[ext_resource type="Script" path="res://Scenes/Scripts/player.gd" id="1_b71vn"]
+[ext_resource type="Script" uid="uid://bmhwebde0361b" path="res://Scenes/Scripts/player.gd" id="1_b71vn"]
 [ext_resource type="Texture2D" uid="uid://cd3fcinti1un5" path="res://addons/proto-csgs/textures/dark/texture_01.png" id="1_k3k4k"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3i4r6"]

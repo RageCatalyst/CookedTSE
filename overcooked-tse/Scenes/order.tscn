@@ -1,11 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://bme8a3a2ws61"]
+[gd_scene load_steps=7 format=3 uid="uid://bme8a3a2ws61"]
 
-[ext_resource type="Script" path="res://Scenes/order.gd" id="1_vwbfx"]
-[ext_resource type="Texture2D" uid="uid://djcn40h0d6261" path="res://onion.jpeg" id="2_xeqm4"]
-[ext_resource type="Texture2D" uid="uid://cktpvc8foytsy" path="res://onion soup.jpeg" id="3_fnvfm"]
+[ext_resource type="Script" uid="uid://dega585ppitah" path="res://Scenes/order.gd" id="1_vwbfx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_70v6w"]
 bg_color = Color(0.0823529, 0.333333, 0.0862745, 1)
+
+[sub_resource type="Resource" id="Resource_70v6w"]
+metadata/__load_path__ = "res://onion.jpeg"
+
+[sub_resource type="Resource" id="Resource_y3t5d"]
+metadata/__load_path__ = "res://onion.jpeg"
+
+[sub_resource type="Resource" id="Resource_xeqm4"]
+metadata/__load_path__ = "res://onion.jpeg"
+
+[sub_resource type="Resource" id="Resource_fnvfm"]
+metadata/__load_path__ = "res://onion soup.jpeg"
 
 [node name="Order" type="Panel"]
 custom_minimum_size = Vector2(270, 45)
@@ -36,27 +46,27 @@ layout_mode = 2
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 size_flags_horizontal = 3
-texture = ExtResource("2_xeqm4")
+texture = SubResource("Resource_70v6w")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Ingredient2" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = ExtResource("2_xeqm4")
+texture = SubResource("Resource_y3t5d")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Ingredient3" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = ExtResource("2_xeqm4")
+texture = SubResource("Resource_xeqm4")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="FinalDish" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = ExtResource("3_fnvfm")
+texture = SubResource("Resource_fnvfm")
 expand_mode = 1
 stretch_mode = 5
