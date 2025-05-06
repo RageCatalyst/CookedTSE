@@ -2,13 +2,13 @@ extends HBoxContainer
 
 @export var order_scene: PackedScene  
 @export var orders: Array[String] 
-@export var score_tracker: NodePath
+@export var _score_tracker: ScoreTracker
 
-var _score_tracker: Node
+#var _score_tracker: Node
 var spawn_timer := 0.0
 
 func _ready() -> void:
-	_score_tracker = get_node(score_tracker)
+	#_score_tracker = get_node(score_tracker)
 	spawn_timer = randf_range(3, 6)  # first spawn between 3-6 seconds
 
 func _process(delta):
@@ -35,16 +35,13 @@ func _on_order_completed(order: Node):
 	print("6.calculated score:", score)
 	print("Order Delivered! Score: ", score)
 	
-<<<<<<< HEAD
 	if has_node("/root/ScoreDisplay2"):
 		get_node("/root/ScoreDisplay2").update_display(
 			_score_tracker.total_score,
 			_score_tracker.curent_combo,
 			min(_score_tracker.current_combo, 4)
 		)
-=======
 func remove_order():
 	print("removing order")
 	orders.remove_at(0)
 	get_child(0).queue_free()
->>>>>>> main

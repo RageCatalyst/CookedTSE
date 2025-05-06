@@ -39,6 +39,29 @@ func interact(player):
 		if held_item.is_in_group(required_group):
 			# Order found! Remove it from the list
 			orders.remove_at(i)
+			print("attempting to notify ordersmanager")
+
+ 
+
+			if orders_manager:
+ 
+
+				if orders_manager.has_method("_on_order_completed"):
+ 
+
+					orders_manager._on_order_completed(orders_manager.get_child(0))
+ 
+
+				else:
+ 
+
+					printerr("ordersmanager missing on order completed method")
+ 
+
+			else:
+ 
+
+				printerr("Ordersmanager reference missingd")
 			print("Delivered: ", required_group)
 			#orders_manager.get_child(0).queue_free()
 			#order_delivered.emit("onion soup")

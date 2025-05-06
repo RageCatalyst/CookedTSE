@@ -12,12 +12,13 @@ func calculate_order_score(order: Node) -> int:
 	
 	print("8.[ScoreTracker] Calculating score")
 	var tip = order.get_tip()
+	print("my tip", tip)
 	var processing_steps = 3 #chop 3 onions = 3 steps ? maybe change to 4 for cooking aswell ?
 
 	current_combo += 1
 	var combo_multiplier = min(floor((current_combo + 1) / 2), max_combo -1) + 1
 	
-	var score = (processing_steps * 20) + (tip * combo_multiplier)
+	var score = (processing_steps * 20) + (tip * 1)
 	total_score += score
 	print("10.new total score", total_score)
 	print("11.[ScoreTracker] Emmiting score_updated with:",total_score, current_combo)
